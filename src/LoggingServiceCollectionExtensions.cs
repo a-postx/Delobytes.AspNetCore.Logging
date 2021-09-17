@@ -14,19 +14,17 @@ namespace Delobytes.AspNetCore.Logging
         /// <param name="services"><see cref="IServiceCollection"/> в которую нужно добавить логирование.</param>
         /// <param name="configure"><see cref="Action{AuthenticationContextOptions}"/> для настройки <see cref="ClaimsLoggingOptions"/>.</param>
         /// <returns>Ссылка на этот экземпляр после завершения операции.</returns>
-        public static IServiceCollection AddClaimsLogging(this IServiceCollection services, Action<ClaimsLoggingOptions> configure)
+        public static IServiceCollection AddClaimsLogging(this IServiceCollection services, Action<ClaimsLoggingOptions> configure = null)
         {
             if (services is null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            if (configure is null)
+            if (configure is not null)
             {
-                throw new ArgumentNullException(nameof(configure));
+                services.Configure(configure);
             }
-
-            services.Configure(configure);
 
             return services;
         }

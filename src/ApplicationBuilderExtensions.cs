@@ -14,7 +14,7 @@ namespace Delobytes.AspNetCore.Logging
         /// </summary>
         /// <param name="app"></param>
         /// <returns></returns>
-        public static IApplicationBuilder UseClaimsLogger(this IApplicationBuilder app)
+        public static IApplicationBuilder UseClaimsLogging(this IApplicationBuilder app)
         {
             if (app == null)
             {
