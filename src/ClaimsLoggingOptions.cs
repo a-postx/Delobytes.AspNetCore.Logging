@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System;
 
 namespace Delobytes.AspNetCore.Logging
 {
@@ -19,5 +19,13 @@ namespace Delobytes.AspNetCore.Logging
         /// <para>Default: tid</para>
         /// </summary>
         public string TenantIdClaimName { get; set; } = "tid";
+
+        /// <summary>
+        /// <para>
+        /// Дополнительные имена удостоверений, значения которых нужно логировать.
+        /// </para>
+        /// <para>Default: Array.Empty</para>
+        /// </summary>
+        public string[] ClaimNames { get; set; } = Array.Empty<string>();
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -31,7 +32,29 @@ namespace Delobytes.AspNetCore.Logging
 
                 using (logger.BeginScopeWith((LogKeys.UserId, userIdClaimValue), (LogKeys.TenantId, tenantIdClaimValue)))
                 {
-                    await _next(context);
+                    if (_options.ClaimNames.Length > 0)
+                    {
+                        Dictionary<string, object> keyValuePairs = new Dictionary<string, object>();
+
+                        foreach (string claimName in _options.ClaimNames)
+                        {
+                            string claimValue = context.User.GetClaimValue<string>(claimName);
+
+                            if (!string.IsNullOrWhiteSpace(claimValue))
+                            {
+                                keyValuePairs.Add(claimName, claimValue);
+                            }
+                        }
+
+                        using (logger.BeginScope(keyValuePairs))
+                        {
+                            await _next(context);
+                        }
+                    }
+                    else
+                    {
+                        await _next(context);
+                    }
                 }
             }
             else
