@@ -44,18 +44,14 @@ namespace Delobytes.AspNetCore.Logging
         /// </summary>
         /// <param name="app"></param>
         /// <returns></returns>
-        public static IApplicationBuilder UseHttpContextLogging(this IApplicationBuilder app, Action<HttpContextLoggingOptions> configureOptions = null)
+        public static IApplicationBuilder UseHttpContextLogging(this IApplicationBuilder app)
         {
             if (app == null)
             {
                 throw new ArgumentNullException(nameof(app));
             }
 
-            HttpContextLoggingOptions options = new HttpContextLoggingOptions();
-
-            configureOptions?.Invoke(options);
-
-            return app.UseMiddleware<HttpContextLoggingMiddleware>(options);
+            return app.UseMiddleware<HttpContextLoggingMiddleware>();
         }
     }
 }
