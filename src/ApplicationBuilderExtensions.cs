@@ -53,5 +53,20 @@ namespace Delobytes.AspNetCore.Logging
 
             return app.UseMiddleware<HttpContextLoggingMiddleware>();
         }
+
+        /// <summary>
+        /// Добавляет прослойку логирования контекста идемпотентности.
+        /// </summary>
+        /// <param name="app"></param>
+        /// <returns></returns>
+        public static IApplicationBuilder UseIdempotencyContextLogging(this IApplicationBuilder app)
+        {
+            if (app == null)
+            {
+                throw new ArgumentNullException(nameof(app));
+            }
+
+            return app.UseMiddleware<IdempotencyLoggingMiddleware>();
+        }
     }
 }

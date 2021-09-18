@@ -49,5 +49,26 @@ namespace Delobytes.AspNetCore.Logging
 
             return services;
         }
+
+        /// <summary>
+        /// Добавляет в <see cref="IServiceCollection"/> настройки логирования контекста идемпотентности.
+        /// </summary>
+        /// <param name="services"><see cref="IServiceCollection"/> в которую нужно добавить логирование.</param>
+        /// <param name="configure"><see cref="Action{IdempotencyContextLoggingOptions}"/> для настройки <see cref="IdempotencyLoggingOptions"/>.</param>
+        /// <returns>Ссылка на этот экземпляр после завершения операции.</returns>
+        public static IServiceCollection AddIdempotencyContextLogging(this IServiceCollection services, Action<IdempotencyLoggingOptions> configure = null)
+        {
+            if (services is null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (configure is not null)
+            {
+                services.Configure(configure);
+            }
+
+            return services;
+        }
     }
 }
