@@ -8,7 +8,7 @@ namespace Delobytes.AspNetCore.Logging
         /// </para>
         /// <para>Default: IdempotencyKey</para>
         /// </summary>
-        public string IdempotencyHeader { get; set; } = "IdempotencyKey";
+        public string IdempotencyHeader { get; set; } = "Idempotency-Key";
 
         /// <summary>
         /// <para>

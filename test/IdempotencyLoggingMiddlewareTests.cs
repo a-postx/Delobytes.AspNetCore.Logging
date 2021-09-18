@@ -58,9 +58,11 @@ namespace Delobytes.AspNetCore.Logging.Tests
         [Fact]
         public async Task IdempotencyValueAddedToScope()
         {
+            IOptions<IdempotencyLoggingOptions> options = Options.Create(new IdempotencyLoggingOptions());
+
             HttpContext ctx = GetContextWithHeaders(new Dictionary<string, StringValues>
             {
-                { "IdempotencyKey", IdempotencyHeaderValue }
+                { options.Value.IdempotencyHeader, IdempotencyHeaderValue }
             });
 
             ITestLoggerFactory loggerFactory = TestLoggerFactory.Create();
@@ -72,7 +74,6 @@ namespace Delobytes.AspNetCore.Logging.Tests
                 return Task.FromResult(0);
             });
 
-            IOptions<IdempotencyLoggingOptions> options = Options.Create(new IdempotencyLoggingOptions());
             IdempotencyLoggingMiddleware middleware = new IdempotencyLoggingMiddleware(requestDelegate, options);
 
             await middleware.InvokeAsync(ctx, logger);
