@@ -16,6 +16,6 @@ namespace Delobytes.AspNetCore.Logging
         /// </para>
         /// <para>Default: IdempotencyKey</para>
         /// </summary>
-        public string IdempotencyLogAttribute { get; set; } = "IdempotencyKey";
+        public string IdempotencyLogAttribute { get; set; } = "Idempotency-Key";
     }
 }

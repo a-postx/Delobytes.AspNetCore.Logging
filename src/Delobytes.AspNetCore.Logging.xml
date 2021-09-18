@@ -1,0 +1,153 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Delobytes.AspNetCore.Logging</name>
+    </assembly>
+    <members>
+        <member name="T:Delobytes.AspNetCore.Logging.ApplicationBuilderExtensions">
+            <summary>
+            Методы расширения.
+            </summary>
+        </member>
+        <member name="M:Delobytes.AspNetCore.Logging.ApplicationBuilderExtensions.UseNetworkLogging(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Добавляет прослойку логирования IP-адреса.
+            </summary>
+            <param name="app"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Delobytes.AspNetCore.Logging.ApplicationBuilderExtensions.UseClaimsLogging(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Добавляет прослойку логирования удостоверений пользователя. Прослойка обрамляет контекст логирования
+            специальными удостоверениями пользовательской сущности.
+            </summary>
+            <param name="app"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Delobytes.AspNetCore.Logging.ApplicationBuilderExtensions.UseHttpContextLogging(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Добавляет прослойку логирования HTTP-контекста.
+            </summary>
+            <param name="app"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Delobytes.AspNetCore.Logging.ApplicationBuilderExtensions.UseIdempotencyContextLogging(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Добавляет прослойку логирования контекста идемпотентности.
+            </summary>
+            <param name="app"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Delobytes.AspNetCore.Logging.ClaimsLoggingMiddleware">
+            <summary>
+            Прослойка логирования удостоверений пользователя.
+            </summary>
+        </member>
+        <member name="P:Delobytes.AspNetCore.Logging.ClaimsLoggingOptions.UserIdClaimName">
+            <summary>
+            <para>
+            Имя удостоверения пользовательского идентификатора, значение которого нужно логировать.
+            </para>
+            <para>Default: uid</para>
+            </summary>
+        </member>
+        <member name="P:Delobytes.AspNetCore.Logging.ClaimsLoggingOptions.TenantIdClaimName">
+            <summary>
+            <para>
+            Имя удостоверения идентификатора арендатора, значение которого нужно логировать.
+            </para>
+            <para>Default: tid</para>
+            </summary>
+        </member>
+        <member name="P:Delobytes.AspNetCore.Logging.ClaimsLoggingOptions.ClaimNames">
+            <summary>
+            <para>
+            Дополнительные имена удостоверений, значения которых нужно логировать.
+            </para>
+            <para>Default: Array.Empty</para>
+            </summary>
+        </member>
+        <member name="T:Delobytes.AspNetCore.Logging.HttpContextLoggingMiddleware">
+            <summary>
+            Прослойка логирования HTTP-контекста.
+            </summary>
+        </member>
+        <member name="P:Delobytes.AspNetCore.Logging.HttpContextLoggingOptions.MaxBodyLength">
+            <summary>
+            <para>
+            Максимальная длина тела в HTTP. Тела запросов и ответов будут обрезаться,
+            если их длина будет превышать указанный порог.
+            </para>
+            <para>Default: 0</para>
+            </summary>
+        </member>
+        <member name="P:Delobytes.AspNetCore.Logging.HttpContextLoggingOptions.SkipPaths">
+            <summary>
+            <para>
+            Пути, запросы по которым необходимо пропускать.
+            </para>
+            <para>Default: null</para>
+            </summary>
+        </member>
+        <member name="T:Delobytes.AspNetCore.Logging.IdempotencyLoggingMiddleware">
+            <summary>
+            Прослойка логирования контекста идемпотентности.
+            </summary>
+        </member>
+        <member name="P:Delobytes.AspNetCore.Logging.IdempotencyLoggingOptions.IdempotencyHeader">
+            <summary>
+            <para>
+            Заголовок идемпотентности, значение которого нужно добавлять в контекст логирования.
+            </para>
+            <para>Default: IdempotencyKey</para>
+            </summary>
+        </member>
+        <member name="P:Delobytes.AspNetCore.Logging.IdempotencyLoggingOptions.IdempotencyLogAttribute">
+            <summary>
+            <para>
+            Имя атрибута в логах.
+            </para>
+            <para>Default: IdempotencyKey</para>
+            </summary>
+        </member>
+        <member name="M:Delobytes.AspNetCore.Logging.LoggerExtensions.BeginScopeWith(Microsoft.Extensions.Logging.ILogger,System.ValueTuple{System.String,System.Object}[])">
+            <summary>Обрамляет контекст логирования дополнительными параметрами.</summary>
+             <param name="logger">Логер.</param>
+            <param name="paramsAndValues">Параметры и их значения, которые нужно добавить в контекст.</param>
+        </member>
+        <member name="T:Delobytes.AspNetCore.Logging.LoggingServiceCollectionExtensions">
+            <summary>
+            Расширения <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> для регистрации сервисов.
+            </summary>
+        </member>
+        <member name="M:Delobytes.AspNetCore.Logging.LoggingServiceCollectionExtensions.AddClaimsLogging(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Delobytes.AspNetCore.Logging.ClaimsLoggingOptions})">
+            <summary>
+            Добавляет в <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> настройки логирования удостоверений пользователя.
+            </summary>
+            <param name="services"><see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> в которую нужно добавить логирование.</param>
+            <param name="configure"><see cref="T:System.Action`1"/> для настройки <see cref="T:Delobytes.AspNetCore.Logging.ClaimsLoggingOptions"/>.</param>
+            <returns>Ссылка на этот экземпляр после завершения операции.</returns>
+        </member>
+        <member name="M:Delobytes.AspNetCore.Logging.LoggingServiceCollectionExtensions.AddHttpContextLogging(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Delobytes.AspNetCore.Logging.HttpContextLoggingOptions})">
+            <summary>
+            Добавляет в <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> настройки логирования HTTP-контекста.
+            </summary>
+            <param name="services"><see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> в которую нужно добавить логирование.</param>
+            <param name="configure"><see cref="T:System.Action`1"/> для настройки <see cref="T:Delobytes.AspNetCore.Logging.HttpContextLoggingOptions"/>.</param>
+            <returns>Ссылка на этот экземпляр после завершения операции.</returns>
+        </member>
+        <member name="M:Delobytes.AspNetCore.Logging.LoggingServiceCollectionExtensions.AddIdempotencyContextLogging(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Delobytes.AspNetCore.Logging.IdempotencyLoggingOptions})">
+            <summary>
+            Добавляет в <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> настройки логирования контекста идемпотентности.
+            </summary>
+            <param name="services"><see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> в которую нужно добавить логирование.</param>
+            <param name="configure"><see cref="T:System.Action`1"/> для настройки <see cref="T:Delobytes.AspNetCore.Logging.IdempotencyLoggingOptions"/>.</param>
+            <returns>Ссылка на этот экземпляр после завершения операции.</returns>
+        </member>
+        <member name="T:Delobytes.AspNetCore.Logging.NetworkLoggingMiddleware">
+            <summary>
+            Прослойка логирования сетевого контекста.
+            </summary>
+        </member>
+    </members>
+</doc>
