@@ -14,6 +14,9 @@ namespace Delobytes.AspNetCore.Logging.Tests
 {
     public class NetworkLoggingMiddlewareTests
     {
+        private static readonly string ConnectionIpAddressValue = "1.1.1.1";
+        private static readonly string HeaderIpAddressValue = "2.2.2.2";
+
         [Fact]
         public async Task ConnectionValueAddedToScope()
         {
@@ -41,7 +44,7 @@ namespace Delobytes.AspNetCore.Logging.Tests
 
             KeyValuePair<string, object> ipAddress = scope.Properties.First();
             ipAddress.Key.Should().Be(LogKeys.ClientIP);
-            ipAddress.Value.Should().Be("1.1.1.1");
+            ipAddress.Value.Should().Be(ConnectionIpAddressValue);
         }
 
         [Fact]
@@ -49,7 +52,7 @@ namespace Delobytes.AspNetCore.Logging.Tests
         {
             HttpContext ctx = GetContextWithHeaders(new Dictionary<string, StringValues>
             {
-                { "X-Original-For", "1.1.1.1" }
+                { "X-Original-For", HeaderIpAddressValue }
             });
 
             ITestLoggerFactory loggerFactory = TestLoggerFactory.Create();
@@ -74,7 +77,7 @@ namespace Delobytes.AspNetCore.Logging.Tests
 
             KeyValuePair<string, object> ipAddress = scope.Properties.First();
             ipAddress.Key.Should().Be(LogKeys.ClientIP);
-            ipAddress.Value.Should().Be("1.1.1.1");
+            ipAddress.Value.Should().Be(HeaderIpAddressValue);
         }
 
         [Fact]
@@ -82,7 +85,7 @@ namespace Delobytes.AspNetCore.Logging.Tests
         {
             HttpContext ctx = GetContextWithHeaders(new Dictionary<string, StringValues>
             {
-                { "X-Client-IP", "1.1.1.1" }
+                { "X-Client-IP", HeaderIpAddressValue }
             });
 
             ITestLoggerFactory loggerFactory = TestLoggerFactory.Create();
@@ -107,13 +110,13 @@ namespace Delobytes.AspNetCore.Logging.Tests
 
             KeyValuePair<string, object> ipAddress = scope.Properties.First();
             ipAddress.Key.Should().Be(LogKeys.ClientIP);
-            ipAddress.Value.Should().Be("1.1.1.1");
+            ipAddress.Value.Should().Be(HeaderIpAddressValue);
         }
 
         private HttpContext GetContextWithHeaders(Dictionary<string, StringValues> headers)
         {
             Mock<HttpContext> httpCtxMock = new Mock<HttpContext>();
-            httpCtxMock.Setup(m => m.Connection.RemoteIpAddress).Returns(IPAddress.Parse("1.1.1.1"));
+            httpCtxMock.Setup(m => m.Connection.RemoteIpAddress).Returns(IPAddress.Parse(ConnectionIpAddressValue));
 
             MockRepository mocks = new MockRepository(MockBehavior.Default);
             Mock<HttpRequest> mockRequest = mocks.Create<HttpRequest>();

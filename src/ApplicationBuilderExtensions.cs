@@ -9,7 +9,7 @@ namespace Delobytes.AspNetCore.Logging
     public static class ApplicationBuilderExtensions
     {
         /// <summary>
-        /// Добавляет прослойку логирования IP-адреса пользователя.
+        /// Добавляет прослойку логирования IP-адреса.
         /// </summary>
         /// <param name="app"></param>
         /// <returns></returns>
@@ -37,6 +37,25 @@ namespace Delobytes.AspNetCore.Logging
             }
 
             return app.UseMiddleware<ClaimsLoggingMiddleware>();
+        }
+
+        /// <summary>
+        /// Добавляет прослойку логирования HTTP-контекста.
+        /// </summary>
+        /// <param name="app"></param>
+        /// <returns></returns>
+        public static IApplicationBuilder UseHttpContextLogging(this IApplicationBuilder app, Action<HttpContextLoggingOptions> configureOptions = null)
+        {
+            if (app == null)
+            {
+                throw new ArgumentNullException(nameof(app));
+            }
+
+            HttpContextLoggingOptions options = new HttpContextLoggingOptions();
+
+            configureOptions?.Invoke(options);
+
+            return app.UseMiddleware<HttpContextLoggingMiddleware>(options);
         }
     }
 }
