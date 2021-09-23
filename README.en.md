@@ -10,7 +10,7 @@ You can use network logging middleware to add IP-address property to the logging
 ```csharp
 public void Configure(IApplicationBuilder application)
 {
-	application.UseNetworkLogging();
+  application.UseNetworkLogging();
 }
 ```
 
@@ -19,16 +19,16 @@ You can use network claims logging middleware to add user claims properties to t
 
 **Usage**
 ```csharp
-	public void ConfigureServices(IServiceCollection services)
-    {
-		...
-		services.AddAuthenticationCore();
-        services.AddClaimsLogging(options =>
-        {
-            options.ClaimNames = new [] { "CustomClaimToLog" };
-        });
-		...
-	}
+public void ConfigureServices(IServiceCollection services)
+{
+  ...
+  services.AddAuthenticationCore();
+  services.AddClaimsLogging(options =>
+  {
+    options.ClaimNames = new [] { "CustomClaimToLog" };
+  });
+  ...
+}
 	
     public void Configure(IApplicationBuilder application)
     {
