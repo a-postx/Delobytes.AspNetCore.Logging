@@ -10,7 +10,7 @@ You can use network logging middleware to add IP-address property to the logging
 ```csharp
 public void Configure(IApplicationBuilder application)
 {
-	application.UseNetworkLogging();
+    application.UseNetworkLogging();
 }
 ```
 
@@ -21,20 +21,20 @@ You can use network claims logging middleware to add user claims properties to t
 ```csharp
 public void ConfigureServices(IServiceCollection services)
 {
-	...
-	services.AddAuthenticationCore();
-	services.AddClaimsLogging(options =>
-	{
-		options.ClaimNames = new [] { "CustomClaimToLog" };
-	});
-	...
+    ...
+    services.AddAuthenticationCore();
+    services.AddClaimsLogging(options =>
+    {
+        options.ClaimNames = new [] { "CustomClaimToLog" };
+    });
+    ...
 }
-	
+
 public void Configure(IApplicationBuilder application)
 {
-	application
-		.UseAuthentication()
-		.UseClaimsLogging();
+    application
+        .UseAuthentication()
+        .UseClaimsLogging();
 }
 ```
 
@@ -45,8 +45,8 @@ You can use HTTP context logging middleware to log detailed request and response
 ```csharp
 public void ConfigureServices(IServiceCollection services)
 {
-	...
-	services.AddHttpContextLogging(options =>
+    ...
+    services.AddHttpContextLogging(options =>
     {
         options.LogRequestBody = true;
         options.LogResponseBody = true;
@@ -54,14 +54,14 @@ public void ConfigureServices(IServiceCollection services)
         options.SkipPaths = new List<PathString> { "/metrics" };
         options.SkipRequestHeaders = new List<string> { "Authorization" };
     });
-	...
+    ...
 }
-	
+
 public void Configure(IApplicationBuilder application)
 {
     application
-		.UseRouting()
-		.UseHttpContextLogging();
+        .UseRouting()
+        .UseHttpContextLogging();
 }
 ```
 
@@ -72,17 +72,17 @@ You can use idempotency logging middleware to add idempotency key header to the 
 ```csharp
 public void ConfigureServices(IServiceCollection services)
 {
-	...
-	services.AddIdempotencyContextLogging(options =>
+    ...
+    services.AddIdempotencyContextLogging(options =>
     {
         options.IdempotencyLogAttribute = "IdempotencyKey";
     });
-	...
+    ...
 }
-	
+
 public void Configure(IApplicationBuilder application)
 {
-	application.UseIdempotencyContextLogging();
+    application.UseIdempotencyContextLogging();
 }
 ```
 
