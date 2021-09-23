@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -13,10 +14,15 @@ using Microsoft.Extensions.Options;
 namespace Delobytes.AspNetCore.Logging
 {
     /// <summary>
-    /// Прослойка логирования HTTP-контекста.
+    /// Прослойка логирования HTTP-контекста. Прослойка логирует данные запроса и ответа в отдельных событиях.
     /// </summary>
     public class HttpContextLoggingMiddleware
     {
+        /// <summary>
+        /// Конструктор.
+        /// </summary>
+        /// <param name="next">Следующая прослойка в конвейере.</param>
+        /// <param name="options">Настроки конфигурации.</param>
         public HttpContextLoggingMiddleware(RequestDelegate next, IOptions<HttpContextLoggingOptions> options)
         {
             _options = options.Value ?? throw new ArgumentNullException(nameof(options));
@@ -26,90 +32,196 @@ namespace Delobytes.AspNetCore.Logging
         private readonly HttpContextLoggingOptions _options;
         private readonly RequestDelegate _next;
 
+        /// <summary>
+        /// Обработчик, который помещает свойства HTTP-контекста в контекст логирования.
+        /// </summary>
+        /// <param name="httpContext"><see cref="HttpContext"/> текущего запроса.</param>
+        /// <param name="logger">Экземпляр <see cref="ILogger"/>.</param>
+        /// <returns></returns>
         public async Task InvokeAsync(HttpContext httpContext, ILogger<HttpContextLoggingMiddleware> logger)
         {
-            HttpContext context = httpContext ?? throw new ArgumentNullException(nameof(httpContext));
-            CancellationToken cancellationToken = context.RequestAborted;
+            HttpContext httpCtx = httpContext ?? throw new ArgumentNullException(nameof(httpContext));
+
+            if (_options.SkipPaths is null)
+            {
+                throw new InvalidOperationException($"{nameof(_options.SkipPaths)} option value is not valid.");
+            }
+
+            if (_options.SkipRequestHeaders is null)
+            {
+                throw new InvalidOperationException($"{nameof(_options.SkipRequestHeaders)} option value is not valid.");
+            }
+
+            if (_options.SkipResponseHeaders is null)
+            {
+                throw new InvalidOperationException($"{nameof(_options.SkipResponseHeaders)} option value is not valid.");
+            }
+
+            CancellationToken cancellationToken = httpCtx.RequestAborted;
 
             bool skipLogging = false;
 
-            if (_options.SkipPaths is not null && _options.SkipPaths.Any(p => p.Value == context.Request.Path))
+            if (_options.SkipPaths.Any(p => p.Value == httpCtx.Request.Path))
             {
                 skipLogging = true;
             }
 
             if (!skipLogging)
             {
-                httpContext.Request.EnableBuffering();
-                Stream body = httpContext.Request.Body;
-                byte[] buffer = new byte[Convert.ToInt32(httpContext.Request.ContentLength, CultureInfo.InvariantCulture)];
-                await httpContext.Request.Body.ReadAsync(buffer.AsMemory(0, buffer.Length), cancellationToken);
-                string initialRequestBody = Encoding.UTF8.GetString(buffer);
-                body.Seek(0, SeekOrigin.Begin);
-                httpContext.Request.Body = body;
+                Dictionary<string, object> requestHeaders = GetValidRequestHeaders(httpCtx.Request.Headers);
 
-                //поля logz.io/logstash могут принимать только строки размером 32 тыс. символов, поэтому обрезаем тела
-                if (initialRequestBody.Length > _options.MaxBodyLength)
+                foreach (string key in _options.SkipRequestHeaders)
                 {
-                    initialRequestBody = initialRequestBody.Substring(0, _options.MaxBodyLength);
+                    requestHeaders.Remove($"{LogKeys.RequestHeaders}.{key}");
+                }
+                
+                using (logger.BeginScope(requestHeaders))
+                {
+                    using (logger.BeginScopeWith((LogKeys.RequestProtocol, httpCtx.Request.Protocol),
+                        (LogKeys.RequestScheme, httpCtx.Request.Scheme),
+                        (LogKeys.RequestHost, httpCtx.Request.Host.Value),
+                        (LogKeys.RequestMethod, httpCtx.Request.Method),
+                        (LogKeys.RequestPath, httpCtx.Request.Path),
+                        (LogKeys.RequestQuery, httpCtx.Request.QueryString),
+                        (LogKeys.RequestPathAndQuery, GetFullPath(httpCtx))))
+                    {
+                        if (_options.LogRequestBody)
+                        {
+                            httpCtx.Request.EnableBuffering();
+                            Stream body = httpCtx.Request.Body;
+                            byte[] buffer = new byte[Convert.ToInt32(httpCtx.Request.ContentLength, CultureInfo.InvariantCulture)];
+                            await httpCtx.Request.Body.ReadAsync(buffer.AsMemory(0, buffer.Length), cancellationToken);
+                            string initialRequestBody = Encoding.UTF8.GetString(buffer);
+                            body.Seek(0, SeekOrigin.Begin);
+                            httpCtx.Request.Body = body;
+
+                            if (_options.MaxBodyLength > 0 && initialRequestBody.Length > _options.MaxBodyLength)
+                            {
+                                initialRequestBody = initialRequestBody.Substring(0, _options.MaxBodyLength);
+                            }
+
+                            using (logger.BeginScopeWith((LogKeys.RequestBody, initialRequestBody)))
+                            {
+                                logger.LogInformation("HTTP request received.");
+                            }
+                        }
+                        else
+                        {
+                            logger.LogInformation("HTTP request received.");
+                        }
+                    }
                 }
 
-                //если какое-то значение заголовка приводится к нулл, то событие не логируется (Unable to submit log event to ELK)
-                using (logger.BeginScope(context.Request.Headers
-                    .ToDictionary(h => $"{LogKeys.RequestHeaders}.{h.Key}", h => h.Value.ToString() as object)))
-                using (logger.BeginScopeWith((LogKeys.RequestBody, initialRequestBody),
-                    (LogKeys.RequestProtocol, context.Request.Protocol),
-                    (LogKeys.RequestScheme, context.Request.Scheme),
-                    (LogKeys.RequestHost, context.Request.Host.Value),
-                    (LogKeys.RequestMethod, context.Request.Method),
-                    (LogKeys.RequestPath, context.Request.Path),
-                    (LogKeys.RequestQuery, context.Request.QueryString),
-                    (LogKeys.RequestPathAndQuery, GetFullPath(context))))
+                if (_options.LogResponseBody)
                 {
-                    logger.LogInformation("HTTP request received.");
+                    using MemoryStream responseBodyMemoryStream = new MemoryStream();
+
+                    Stream originalResponseBodyReference = httpCtx.Response.Body;
+                    httpCtx.Response.Body = responseBodyMemoryStream;
+
+                    await _next(httpCtx);
+
+                    httpCtx.Response.Body.Seek(0, SeekOrigin.Begin);
+
+                    string responseBody;
+
+                    using StreamReader sr = new StreamReader(httpCtx.Response.Body);
+                    responseBody = await sr.ReadToEndAsync();
+                    httpCtx.Response.Body.Seek(0, SeekOrigin.Begin);
+
+                    string endResponseBody = (_options.MaxBodyLength > 0 && responseBody.Length > _options.MaxBodyLength)
+                        ? responseBody.Substring(0, _options.MaxBodyLength)
+                        : responseBody;
+
+                    Dictionary<string, object> responseHeaders = GetValidResponseHeaders(httpCtx.Response.Headers);
+
+                    foreach (string key in _options.SkipResponseHeaders)
+                    {
+                        responseHeaders.Remove($"{LogKeys.ResponseHeaders}.{key}");
+                    }
+
+                    using (logger.BeginScope(responseHeaders))
+                    using (logger.BeginScopeWith((LogKeys.StatusCode, httpCtx.Response.StatusCode),
+                        (LogKeys.ResponseBody, endResponseBody),
+                        (LogKeys.RequestProtocol, httpCtx.Request.Protocol),
+                        (LogKeys.RequestScheme, httpCtx.Request.Scheme),
+                        (LogKeys.RequestHost, httpCtx.Request.Host.Value),
+                        (LogKeys.RequestMethod, httpCtx.Request.Method),
+                        (LogKeys.RequestPath, httpCtx.Request.Path),
+                        (LogKeys.RequestQuery, httpCtx.Request.QueryString),
+                        (LogKeys.RequestPathAndQuery, GetFullPath(httpCtx)),
+                        (LogKeys.RequestAborted, httpCtx.RequestAborted.IsCancellationRequested)))
+                    {
+                        logger.LogInformation("HTTP request handled.");
+                    }
+
+                    await responseBodyMemoryStream.CopyToAsync(originalResponseBodyReference, cancellationToken);
                 }
-
-                using MemoryStream responseBodyMemoryStream = new MemoryStream();
-
-                Stream originalResponseBodyReference = context.Response.Body;
-                context.Response.Body = responseBodyMemoryStream;
-
-                await _next(context);
-
-                context.Response.Body.Seek(0, SeekOrigin.Begin);
-
-                string responseBody;
-
-                using StreamReader sr = new StreamReader(context.Response.Body);
-                responseBody = await sr.ReadToEndAsync();
-                context.Response.Body.Seek(0, SeekOrigin.Begin);
-
-                string endResponseBody = (responseBody.Length > _options.MaxBodyLength) ?
-                    responseBody.Substring(0, _options.MaxBodyLength) : responseBody;
-
-                //если какое-то значение заголовка приводится к нулл, то событие не логируется (Unable to submit log event to ELK)
-                using (logger.BeginScope(context.Response.Headers
-                    .ToDictionary(h => $"{LogKeys.ResponseHeaders}.{h.Key}", h => h.Value.ToString() as object)))
-                using (logger.BeginScopeWith((LogKeys.StatusCode, context.Response.StatusCode),
-                    (LogKeys.ResponseBody, endResponseBody),
-                    (LogKeys.RequestProtocol, context.Request.Protocol),
-                    (LogKeys.RequestScheme, context.Request.Scheme),
-                    (LogKeys.RequestHost, context.Request.Host.Value),
-                    (LogKeys.RequestMethod, context.Request.Method),
-                    (LogKeys.RequestPath, context.Request.Path),
-                    (LogKeys.RequestQuery, context.Request.QueryString),
-                    (LogKeys.RequestPathAndQuery, GetFullPath(context)),
-                    (LogKeys.RequestAborted, context.RequestAborted.IsCancellationRequested)))
+                else
                 {
-                    logger.LogInformation("HTTP request handled.");
-                }
+                    await _next(httpCtx);
 
-                await responseBodyMemoryStream.CopyToAsync(originalResponseBodyReference, cancellationToken);
+                    Dictionary<string, object> responseHeaders = GetValidResponseHeaders(httpCtx.Response.Headers);
+
+                    foreach (string key in _options.SkipResponseHeaders)
+                    {
+                        responseHeaders.Remove($"{LogKeys.ResponseHeaders}.{key}");
+                    }
+
+                    using (logger.BeginScope(responseHeaders))
+                    using (logger.BeginScopeWith((LogKeys.StatusCode, httpCtx.Response.StatusCode),
+                        (LogKeys.RequestProtocol, httpCtx.Request.Protocol),
+                        (LogKeys.RequestScheme, httpCtx.Request.Scheme),
+                        (LogKeys.RequestHost, httpCtx.Request.Host.Value),
+                        (LogKeys.RequestMethod, httpCtx.Request.Method),
+                        (LogKeys.RequestPath, httpCtx.Request.Path),
+                        (LogKeys.RequestQuery, httpCtx.Request.QueryString),
+                        (LogKeys.RequestPathAndQuery, GetFullPath(httpCtx)),
+                        (LogKeys.RequestAborted, httpCtx.RequestAborted.IsCancellationRequested)))
+                    {
+                        logger.LogInformation("HTTP request handled.");
+                    }
+                }
             }
             else
             {
-                await _next(context);
+                await _next(httpCtx);
             }
+        }
+
+        private static Dictionary<string,object> GetValidRequestHeaders(IHeaderDictionary headers)
+        {
+            Dictionary<string, object> validHeaders = ConvertHeadersToDicWithPrefix(headers, LogKeys.RequestHeaders);
+
+            //если какое-то значение заголовка приводится к неопределённости, то всё событие
+            //может не логироваться у определённых провайдеров (например, ELK), поэтому удаляем
+            IEnumerable<string> emptyHeaders = validHeaders.Where(e => e.Value is null).Select(s => s.Key);
+
+            foreach (string key in emptyHeaders)
+            {
+                validHeaders.Remove(key);
+            }
+
+            return validHeaders;
+        }
+
+        private static Dictionary<string, object> GetValidResponseHeaders(IHeaderDictionary headers)
+        {
+            Dictionary<string, object> validHeaders = ConvertHeadersToDicWithPrefix(headers, LogKeys.ResponseHeaders);
+
+            IEnumerable<string> emptyHeaders = validHeaders.Where(e => e.Value is null).Select(s => s.Key);
+
+            foreach (string key in emptyHeaders)
+            {
+                validHeaders.Remove(key);
+            }
+
+            return validHeaders;
+        }
+
+        private static Dictionary<string, object> ConvertHeadersToDicWithPrefix(IHeaderDictionary headers, string keyPrefix)
+        {
+            return headers.ToDictionary(h => $"{keyPrefix}.{h.Key}", h => h.Value.ToString() as object);
         }
 
         private static string GetFullPath(HttpContext httpContext)

@@ -12,6 +12,11 @@ namespace Delobytes.AspNetCore.Logging
     /// </summary>
     public class ClaimsLoggingMiddleware
     {
+        /// <summary>
+        /// Конструктор.
+        /// </summary>
+        /// <param name="next">Следующая прослойка в конвейере.</param>
+        /// <param name="options">Настроки конфигурации.</param>
         public ClaimsLoggingMiddleware(RequestDelegate next, IOptions<ClaimsLoggingOptions> options)
         {
             _options = options.Value ?? throw new ArgumentNullException(nameof(options));
@@ -21,6 +26,12 @@ namespace Delobytes.AspNetCore.Logging
         private readonly ClaimsLoggingOptions _options;
         private readonly RequestDelegate _next;
 
+        /// <summary>
+        /// Обработчик, который добавляет удостоверения пользователя в контекст логирования.
+        /// </summary>
+        /// <param name="httpContext"><see cref="HttpContext"/> текущего запроса.</param>
+        /// <param name="logger">Экземпляр <see cref="ILogger"/>.</param>
+        /// <returns></returns>
         public async Task InvokeAsync(HttpContext httpContext, ILogger<ClaimsLoggingMiddleware> logger)
         {
             HttpContext context = httpContext ?? throw new ArgumentNullException(nameof(httpContext));

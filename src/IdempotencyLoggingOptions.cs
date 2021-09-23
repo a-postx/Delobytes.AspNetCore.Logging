@@ -1,5 +1,8 @@
 namespace Delobytes.AspNetCore.Logging
 {
+    /// <summary>
+    /// Настройки логирования идемпотентности.
+    /// </summary>
     public class IdempotencyLoggingOptions
     {
         /// <summary>

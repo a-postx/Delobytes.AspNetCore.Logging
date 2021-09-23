@@ -26,6 +26,8 @@ namespace Delobytes.AspNetCore.Logging
                 services.Configure(configure);
             }
 
+            services.AddOptions();
+
             return services;
         }
 
@@ -47,6 +49,8 @@ namespace Delobytes.AspNetCore.Logging
                 services.Configure(configure);
             }
 
+            services.AddOptions();
+
             return services;
         }
 
@@ -67,6 +71,8 @@ namespace Delobytes.AspNetCore.Logging
             {
                 services.Configure(configure);
             }
+
+            services.AddOptions();
 
             return services;
         }

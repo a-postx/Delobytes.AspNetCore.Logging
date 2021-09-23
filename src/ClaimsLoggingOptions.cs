@@ -2,6 +2,9 @@ using System;
 
 namespace Delobytes.AspNetCore.Logging
 {
+    /// <summary>
+    /// Настройки логирования удостоверений пользователя.
+    /// </summary>
     public class ClaimsLoggingOptions
     {
         /// <summary>

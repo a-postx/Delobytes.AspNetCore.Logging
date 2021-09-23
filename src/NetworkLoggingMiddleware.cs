@@ -12,6 +12,10 @@ namespace Delobytes.AspNetCore.Logging
     /// </summary>
     public class NetworkLoggingMiddleware
     {
+        /// <summary>
+        /// Конструктор.
+        /// </summary>
+        /// <param name="next">Следующая прослойка в конвейере.</param>
         public NetworkLoggingMiddleware(RequestDelegate next)
         {
             _next = next ?? throw new ArgumentNullException(nameof(next));
@@ -19,6 +23,12 @@ namespace Delobytes.AspNetCore.Logging
 
         private readonly RequestDelegate _next;
 
+        /// <summary>
+        /// Обработчик, который добавляет IP-адрес в контекст логирования.
+        /// </summary>
+        /// <param name="httpContext"><see cref="HttpContext"/> текущего запроса.</param>
+        /// <param name="logger">Экземпляр <see cref="ILogger"/>.</param>
+        /// <returns></returns>
         public async Task InvokeAsync(HttpContext httpContext, ILogger<NetworkLoggingMiddleware> logger)
         {
             HttpContext context = httpContext ?? throw new ArgumentNullException(nameof(httpContext));

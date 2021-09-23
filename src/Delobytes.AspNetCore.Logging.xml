@@ -43,6 +43,26 @@
             Прослойка логирования удостоверений пользователя.
             </summary>
         </member>
+        <member name="M:Delobytes.AspNetCore.Logging.ClaimsLoggingMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate,Microsoft.Extensions.Options.IOptions{Delobytes.AspNetCore.Logging.ClaimsLoggingOptions})">
+            <summary>
+            Конструктор.
+            </summary>
+            <param name="next">Следующая прослойка в конвейере.</param>
+            <param name="options">Настроки конфигурации.</param>
+        </member>
+        <member name="M:Delobytes.AspNetCore.Logging.ClaimsLoggingMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext,Microsoft.Extensions.Logging.ILogger{Delobytes.AspNetCore.Logging.ClaimsLoggingMiddleware})">
+            <summary>
+            Обработчик, который добавляет удостоверения пользователя в контекст логирования.
+            </summary>
+            <param name="httpContext"><see cref="T:Microsoft.AspNetCore.Http.HttpContext"/> текущего запроса.</param>
+            <param name="logger">Экземпляр <see cref="T:Microsoft.Extensions.Logging.ILogger"/>.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Delobytes.AspNetCore.Logging.ClaimsLoggingOptions">
+            <summary>
+            Настройки логирования удостоверений пользователя.
+            </summary>
+        </member>
         <member name="P:Delobytes.AspNetCore.Logging.ClaimsLoggingOptions.UserIdClaimName">
             <summary>
             <para>
@@ -69,7 +89,43 @@
         </member>
         <member name="T:Delobytes.AspNetCore.Logging.HttpContextLoggingMiddleware">
             <summary>
-            Прослойка логирования HTTP-контекста.
+            Прослойка логирования HTTP-контекста. Прослойка логирует данные запроса и ответа в отдельных событиях.
+            </summary>
+        </member>
+        <member name="M:Delobytes.AspNetCore.Logging.HttpContextLoggingMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate,Microsoft.Extensions.Options.IOptions{Delobytes.AspNetCore.Logging.HttpContextLoggingOptions})">
+            <summary>
+            Конструктор.
+            </summary>
+            <param name="next">Следующая прослойка в конвейере.</param>
+            <param name="options">Настроки конфигурации.</param>
+        </member>
+        <member name="M:Delobytes.AspNetCore.Logging.HttpContextLoggingMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext,Microsoft.Extensions.Logging.ILogger{Delobytes.AspNetCore.Logging.HttpContextLoggingMiddleware})">
+            <summary>
+            Обработчик, который помещает свойства HTTP-контекста в контекст логирования.
+            </summary>
+            <param name="httpContext"><see cref="T:Microsoft.AspNetCore.Http.HttpContext"/> текущего запроса.</param>
+            <param name="logger">Экземпляр <see cref="T:Microsoft.Extensions.Logging.ILogger"/>.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Delobytes.AspNetCore.Logging.HttpContextLoggingOptions">
+            <summary>
+            Настройки логирования HTTP-контекста.
+            </summary>
+        </member>
+        <member name="P:Delobytes.AspNetCore.Logging.HttpContextLoggingOptions.LogRequestBody">
+            <summary>
+            <para>
+            Нужно ли логировать тело запроса.
+            </para>
+            <para>Default: false</para>
+            </summary>
+        </member>
+        <member name="P:Delobytes.AspNetCore.Logging.HttpContextLoggingOptions.LogResponseBody">
+            <summary>
+            <para>
+            Нужно ли логировать тело ответа.
+            </para>
+            <para>Default: false</para>
             </summary>
         </member>
         <member name="P:Delobytes.AspNetCore.Logging.HttpContextLoggingOptions.MaxBodyLength">
@@ -86,12 +142,48 @@
             <para>
             Пути, запросы по которым необходимо пропускать.
             </para>
-            <para>Default: null</para>
+            <para>Default: Enumerable.Empty</para>
+            </summary>
+        </member>
+        <member name="P:Delobytes.AspNetCore.Logging.HttpContextLoggingOptions.SkipRequestHeaders">
+            <summary>
+            <para>
+            Заголовки запроса, которые необходимо исключить из логирования.
+            </para>
+            <para>Default: Enumerable.Empty</para>
+            </summary>
+        </member>
+        <member name="P:Delobytes.AspNetCore.Logging.HttpContextLoggingOptions.SkipResponseHeaders">
+            <summary>
+            <para>
+            Заголовки ответа, которые необходимо исключить из логирования.
+            </para>
+            <para>Default: Enumerable.Empty</para>
             </summary>
         </member>
         <member name="T:Delobytes.AspNetCore.Logging.IdempotencyLoggingMiddleware">
             <summary>
             Прослойка логирования контекста идемпотентности.
+            </summary>
+        </member>
+        <member name="M:Delobytes.AspNetCore.Logging.IdempotencyLoggingMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate,Microsoft.Extensions.Options.IOptions{Delobytes.AspNetCore.Logging.IdempotencyLoggingOptions})">
+            <summary>
+            Конструктор.
+            </summary>
+            <param name="next">Следующая прослойка в конвейере.</param>
+            <param name="options">Настроки конфигурации.</param>
+        </member>
+        <member name="M:Delobytes.AspNetCore.Logging.IdempotencyLoggingMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext,Microsoft.Extensions.Logging.ILogger{Delobytes.AspNetCore.Logging.IdempotencyLoggingMiddleware})">
+            <summary>
+            Обработчик, который добавляет ключ идемпотентности в контекст логирования.
+            </summary>
+            <param name="httpContext"><see cref="T:Microsoft.AspNetCore.Http.HttpContext"/> текущего запроса.</param>
+            <param name="logger">Экземпляр <see cref="T:Microsoft.Extensions.Logging.ILogger"/>.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Delobytes.AspNetCore.Logging.IdempotencyLoggingOptions">
+            <summary>
+            Настройки логирования идемпотентности.
             </summary>
         </member>
         <member name="P:Delobytes.AspNetCore.Logging.IdempotencyLoggingOptions.IdempotencyHeader">
@@ -110,8 +202,15 @@
             <para>Default: IdempotencyKey</para>
             </summary>
         </member>
+        <member name="T:Delobytes.AspNetCore.Logging.LoggerExtensions">
+            <summary>
+            Расширения логирования.
+            </summary>
+        </member>
         <member name="M:Delobytes.AspNetCore.Logging.LoggerExtensions.BeginScopeWith(Microsoft.Extensions.Logging.ILogger,System.ValueTuple{System.String,System.Object}[])">
-            <summary>Обрамляет контекст логирования дополнительными параметрами.</summary>
+            <summary>
+            Обрамляет контекст логирования дополнительными параметрами.
+            </summary>
              <param name="logger">Логер.</param>
             <param name="paramsAndValues">Параметры и их значения, которые нужно добавить в контекст.</param>
         </member>
@@ -144,10 +243,109 @@
             <param name="configure"><see cref="T:System.Action`1"/> для настройки <see cref="T:Delobytes.AspNetCore.Logging.IdempotencyLoggingOptions"/>.</param>
             <returns>Ссылка на этот экземпляр после завершения операции.</returns>
         </member>
+        <member name="T:Delobytes.AspNetCore.Logging.LogKeys">
+            <summary>
+            Названия атрибутов, которые записываются в логи.
+            </summary>
+        </member>
+        <member name="F:Delobytes.AspNetCore.Logging.LogKeys.ClientIP">
+            <summary>
+            Адрес клиента.
+            </summary>
+        </member>
+        <member name="F:Delobytes.AspNetCore.Logging.LogKeys.TenantId">
+            <summary>
+            Идентификатор арендатора.
+            </summary>
+        </member>
+        <member name="F:Delobytes.AspNetCore.Logging.LogKeys.UserId">
+            <summary>
+            Идентификатор пользователя.
+            </summary>
+        </member>
+        <member name="F:Delobytes.AspNetCore.Logging.LogKeys.RequestProtocol">
+            <summary>
+            Протокол запроса.
+            </summary>
+        </member>
+        <member name="F:Delobytes.AspNetCore.Logging.LogKeys.RequestScheme">
+            <summary>
+            Схема запроса.
+            </summary>
+        </member>
+        <member name="F:Delobytes.AspNetCore.Logging.LogKeys.RequestHost">
+            <summary>
+            Хост, с которого пришёл запрос.
+            </summary>
+        </member>
+        <member name="F:Delobytes.AspNetCore.Logging.LogKeys.RequestMethod">
+            <summary>
+            Метод запроса.
+            </summary>
+        </member>
+        <member name="F:Delobytes.AspNetCore.Logging.LogKeys.RequestPath">
+            <summary>
+            Путь запроса.
+            </summary>
+        </member>
+        <member name="F:Delobytes.AspNetCore.Logging.LogKeys.RequestQuery">
+            <summary>
+            Параметры запроса.
+            </summary>
+        </member>
+        <member name="F:Delobytes.AspNetCore.Logging.LogKeys.RequestPathAndQuery">
+            <summary>
+            Путь и параметры запроса.
+            </summary>
+        </member>
+        <member name="F:Delobytes.AspNetCore.Logging.LogKeys.RequestHeaders">
+            <summary>
+            Заголовки запроса.
+            </summary>
+        </member>
+        <member name="F:Delobytes.AspNetCore.Logging.LogKeys.RequestBody">
+            <summary>
+            Тело запроса.
+            </summary>
+        </member>
+        <member name="F:Delobytes.AspNetCore.Logging.LogKeys.RequestAborted">
+            <summary>
+            Признак отмены запроса.
+            </summary>
+        </member>
+        <member name="F:Delobytes.AspNetCore.Logging.LogKeys.StatusCode">
+            <summary>
+            Код ответа.
+            </summary>
+        </member>
+        <member name="F:Delobytes.AspNetCore.Logging.LogKeys.ResponseHeaders">
+            <summary>
+            Заголовки ответа.
+            </summary>
+        </member>
+        <member name="F:Delobytes.AspNetCore.Logging.LogKeys.ResponseBody">
+            <summary>
+            Тело ответа.
+            </summary>
+        </member>
         <member name="T:Delobytes.AspNetCore.Logging.NetworkLoggingMiddleware">
             <summary>
             Прослойка логирования сетевого контекста.
             </summary>
+        </member>
+        <member name="M:Delobytes.AspNetCore.Logging.NetworkLoggingMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate)">
+            <summary>
+            Конструктор.
+            </summary>
+            <param name="next">Следующая прослойка в конвейере.</param>
+        </member>
+        <member name="M:Delobytes.AspNetCore.Logging.NetworkLoggingMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext,Microsoft.Extensions.Logging.ILogger{Delobytes.AspNetCore.Logging.NetworkLoggingMiddleware})">
+            <summary>
+            Обработчик, который добавляет IP-адрес в контекст логирования.
+            </summary>
+            <param name="httpContext"><see cref="T:Microsoft.AspNetCore.Http.HttpContext"/> текущего запроса.</param>
+            <param name="logger">Экземпляр <see cref="T:Microsoft.Extensions.Logging.ILogger"/>.</param>
+            <returns></returns>
         </member>
     </members>
 </doc>
