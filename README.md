@@ -8,10 +8,10 @@
 
 **Использование**
 ```csharp
-    public void Configure(IApplicationBuilder application)
-    {
-        application.UseNetworkLogging();
-	}
+public void Configure(IApplicationBuilder application)
+{
+    application.UseNetworkLogging();
+}
 ```
 
 ## ClaimsLoggingMiddleware
@@ -19,23 +19,22 @@
 
 **Использование**
 ```csharp
-	public void ConfigureServices(IServiceCollection services)
+public void ConfigureServices(IServiceCollection services)
+{
+    //...
+    services.AddAuthenticationCore();
+    services.AddClaimsLogging(options =>
     {
-		...
-		services.AddAuthenticationCore();
-        services.AddClaimsLogging(options =>
-        {
-            options.ClaimNames = new [] { "CustomClaimToLog" };
-        });
-		...
-	}
-	
-    public void Configure(IApplicationBuilder application)
-    {
-        application
-		    .UseAuthentication()
-            .UseClaimsLogging();
-	}
+        options.ClaimNames = new [] { "CustomClaimToLog" };
+    });
+}
+
+public void Configure(IApplicationBuilder application)
+{
+    application
+        .UseAuthentication()
+        .UseClaimsLogging();
+}
 ```
 
 ## HttpContextLoggingMiddleware
@@ -43,27 +42,25 @@
 
 **Использование**
 ```csharp
-	public void ConfigureServices(IServiceCollection services)
+public void ConfigureServices(IServiceCollection services)
+{
+    //...
+    services.AddHttpContextLogging(options =>
     {
-		...
-		
-		services.AddHttpContextLogging(options =>
-        {
-            options.LogRequestBody = true;
-            options.LogResponseBody = true;
-            options.MaxBodyLength = 32759;
-            options.SkipPaths = new List<PathString> { "/metrics" };
-            options.SkipRequestHeaders = new List<string> { "Authorization" };
-        });
-		...
-	}
-	
-    public void Configure(IApplicationBuilder application)
-    {
-        application
-		    .UseRouting()
-            .UseHttpContextLogging();
-	}
+        options.LogRequestBody = true;
+        options.LogResponseBody = true;
+        options.MaxBodyLength = 32759;
+        options.SkipPaths = new List<PathString> { "/metrics" };
+        options.SkipRequestHeaders = new List<string> { "Authorization" };
+    });
+}
+
+public void Configure(IApplicationBuilder application)
+{
+    application
+        .UseRouting()
+        .UseHttpContextLogging();
+}
 ```
 
 ## IdempotencyLoggingMiddleware
@@ -71,20 +68,19 @@
 
 **Использование**
 ```csharp
-	public void ConfigureServices(IServiceCollection services)
+public void ConfigureServices(IServiceCollection services)
+{
+    //...
+    services.AddIdempotencyContextLogging(options =>
     {
-		...
-		services.AddIdempotencyContextLogging(options =>
-        {
-            options.IdempotencyLogAttribute = "IdempotencyKey";
-        });
-		...
-	}
-	
-    public void Configure(IApplicationBuilder application)
-    {
-        application.UseIdempotencyContextLogging();
-	}
+        options.IdempotencyLogAttribute = "IdempotencyKey";
+    });
+}
+
+public void Configure(IApplicationBuilder application)
+{
+    application.UseIdempotencyContextLogging();
+}
 ```
 
 ## Лицензия
