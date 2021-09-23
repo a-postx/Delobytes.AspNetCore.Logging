@@ -6,7 +6,7 @@
     <Authors>Alexey Yakubin</Authors>
     <Company>Delobytes</Company>
     <Copyright>Авторские права © Делобайты 2021. Все права защищены</Copyright>
-	  <Description>Прослойки логирования</Description>
+	  <Description>Прослойки логирования для веб-апи приложений на .Net 5.</Description>
     <PackageProjectUrl>https://github.com/a-postx/Delobytes.AspNetCore.Logging</PackageProjectUrl>
     <RepositoryUrl>https://github.com/a-postx/Delobytes.AspNetCore.Logging.git</RepositoryUrl>
 	  <RepositoryType>git</RepositoryType>   

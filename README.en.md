@@ -8,10 +8,10 @@ You can use network logging middleware to add IP-address property to the logging
 
 **Usage**
 ```csharp
-    public void Configure(IApplicationBuilder application)
-    {
-        application.UseNetworkLogging();
-	}
+public void Configure(IApplicationBuilder application)
+{
+	application.UseNetworkLogging();
+}
 ```
 
 ## ClaimsLoggingMiddleware
