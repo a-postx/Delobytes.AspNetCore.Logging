@@ -21,13 +21,12 @@ You can use network claims logging middleware to add user claims properties to t
 ```csharp
 public void ConfigureServices(IServiceCollection services)
 {
-    ...
+    //...
     services.AddAuthenticationCore();
     services.AddClaimsLogging(options =>
     {
         options.ClaimNames = new [] { "CustomClaimToLog" };
     });
-    ...
 }
 
 public void Configure(IApplicationBuilder application)
@@ -45,7 +44,7 @@ You can use HTTP context logging middleware to log detailed request and response
 ```csharp
 public void ConfigureServices(IServiceCollection services)
 {
-    ...
+    //...
     services.AddHttpContextLogging(options =>
     {
         options.LogRequestBody = true;
@@ -54,7 +53,6 @@ public void ConfigureServices(IServiceCollection services)
         options.SkipPaths = new List<PathString> { "/metrics" };
         options.SkipRequestHeaders = new List<string> { "Authorization" };
     });
-    ...
 }
 
 public void Configure(IApplicationBuilder application)
@@ -72,12 +70,11 @@ You can use idempotency logging middleware to add idempotency key header to the 
 ```csharp
 public void ConfigureServices(IServiceCollection services)
 {
-    ...
+    //...
     services.AddIdempotencyContextLogging(options =>
     {
         options.IdempotencyLogAttribute = "IdempotencyKey";
     });
-    ...
 }
 
 public void Configure(IApplicationBuilder application)
