@@ -10,6 +10,10 @@ namespace Delobytes.AspNetCore.Logging
         /// </summary>
         public const string ClientIP = nameof(ClientIP);
         /// <summary>
+        /// Идентификатор корреляции.
+        /// </summary>
+        public const string CorrelationId = nameof(CorrelationId);
+        /// <summary>
         /// Идентификатор арендатора.
         /// </summary>
         public const string TenantId = nameof(TenantId);
