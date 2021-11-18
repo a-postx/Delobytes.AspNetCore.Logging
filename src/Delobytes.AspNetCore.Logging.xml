@@ -253,6 +253,11 @@
             Адрес клиента.
             </summary>
         </member>
+        <member name="F:Delobytes.AspNetCore.Logging.LogKeys.CorrelationId">
+            <summary>
+            Идентификатор корреляции.
+            </summary>
+        </member>
         <member name="F:Delobytes.AspNetCore.Logging.LogKeys.TenantId">
             <summary>
             Идентификатор арендатора.

@@ -10,123 +10,122 @@ using Microsoft.Extensions.Primitives;
 using Moq;
 using Xunit;
 
-namespace Delobytes.AspNetCore.Logging.Tests
+namespace Delobytes.AspNetCore.Logging.Tests;
+
+public class NetworkLoggingMiddlewareTests
 {
-    public class NetworkLoggingMiddlewareTests
+    private static readonly string ConnectionIpAddressValue = "1.1.1.1";
+    private static readonly string HeaderIpAddressValue = "2.2.2.2";
+
+    [Fact]
+    public async Task ConnectionValueAddedToScope()
     {
-        private static readonly string ConnectionIpAddressValue = "1.1.1.1";
-        private static readonly string HeaderIpAddressValue = "2.2.2.2";
+        HttpContext ctx = GetContextWithHeaders(new Dictionary<string, StringValues>());
 
-        [Fact]
-        public async Task ConnectionValueAddedToScope()
+        ITestLoggerFactory loggerFactory = TestLoggerFactory.Create();
+        ILogger<NetworkLoggingMiddleware> logger = loggerFactory.CreateLogger<NetworkLoggingMiddleware>();
+
+        RequestDelegate requestDelegate = new RequestDelegate((innerContext) =>
         {
-            HttpContext ctx = GetContextWithHeaders(new Dictionary<string, StringValues>());
+            logger.LogInformation("test");
+            return Task.FromResult(0);
+        });
 
-            ITestLoggerFactory loggerFactory = TestLoggerFactory.Create();
-            ILogger<NetworkLoggingMiddleware> logger = loggerFactory.CreateLogger<NetworkLoggingMiddleware>();
+        NetworkLoggingMiddleware middleware = new NetworkLoggingMiddleware(requestDelegate);
 
-            RequestDelegate requestDelegate = new RequestDelegate((innerContext) =>
-            {
-                logger.LogInformation("test");
-                return Task.FromResult(0);
-            });
+        await middleware.InvokeAsync(ctx, logger);
 
-            NetworkLoggingMiddleware middleware = new NetworkLoggingMiddleware(requestDelegate);
+        LogEntry log = Assert.Single(loggerFactory.Sink.LogEntries);
+        log.Message.Should().Be("test");
+        loggerFactory.Sink.Scopes.Should().NotBeEmpty().And.ContainSingle();
 
-            await middleware.InvokeAsync(ctx, logger);
+        BeginScope scope = loggerFactory.Sink.Scopes.First();
+        scope.Properties.Should().NotBeNull().And.HaveCount(1);
 
-            LogEntry log = Assert.Single(loggerFactory.Sink.LogEntries);
-            log.Message.Should().Be("test");
-            loggerFactory.Sink.Scopes.Should().NotBeEmpty().And.ContainSingle();
+        KeyValuePair<string, object> ipAddress = scope.Properties.First();
+        ipAddress.Key.Should().Be(LogKeys.ClientIP);
+        ipAddress.Value.Should().Be(ConnectionIpAddressValue);
+    }
 
-            BeginScope scope = loggerFactory.Sink.Scopes.First();
-            scope.Properties.Should().NotBeNull().And.HaveCount(1);
-
-            KeyValuePair<string, object> ipAddress = scope.Properties.First();
-            ipAddress.Key.Should().Be(LogKeys.ClientIP);
-            ipAddress.Value.Should().Be(ConnectionIpAddressValue);
-        }
-
-        [Fact]
-        public async Task OriginalForValueAddedToScope()
-        {
-            HttpContext ctx = GetContextWithHeaders(new Dictionary<string, StringValues>
+    [Fact]
+    public async Task OriginalForValueAddedToScope()
+    {
+        HttpContext ctx = GetContextWithHeaders(new Dictionary<string, StringValues>
             {
                 { "X-Original-For", HeaderIpAddressValue }
             });
 
-            ITestLoggerFactory loggerFactory = TestLoggerFactory.Create();
-            ILogger<NetworkLoggingMiddleware> logger = loggerFactory.CreateLogger<NetworkLoggingMiddleware>();
+        ITestLoggerFactory loggerFactory = TestLoggerFactory.Create();
+        ILogger<NetworkLoggingMiddleware> logger = loggerFactory.CreateLogger<NetworkLoggingMiddleware>();
 
-            RequestDelegate requestDelegate = new RequestDelegate((innerContext) =>
-            {
-                logger.LogInformation("test");
-                return Task.FromResult(0);
-            });
-
-            NetworkLoggingMiddleware middleware = new NetworkLoggingMiddleware(requestDelegate);
-
-            await middleware.InvokeAsync(ctx, logger);
-
-            LogEntry log = Assert.Single(loggerFactory.Sink.LogEntries);
-            log.Message.Should().Be("test");
-            loggerFactory.Sink.Scopes.Should().NotBeEmpty().And.ContainSingle();
-
-            BeginScope scope = loggerFactory.Sink.Scopes.First();
-            scope.Properties.Should().NotBeNull().And.HaveCount(1);
-
-            KeyValuePair<string, object> ipAddress = scope.Properties.First();
-            ipAddress.Key.Should().Be(LogKeys.ClientIP);
-            ipAddress.Value.Should().Be(HeaderIpAddressValue);
-        }
-
-        [Fact]
-        public async Task ClientIpValueAddedToScope()
+        RequestDelegate requestDelegate = new RequestDelegate((innerContext) =>
         {
-            HttpContext ctx = GetContextWithHeaders(new Dictionary<string, StringValues>
+            logger.LogInformation("test");
+            return Task.FromResult(0);
+        });
+
+        NetworkLoggingMiddleware middleware = new NetworkLoggingMiddleware(requestDelegate);
+
+        await middleware.InvokeAsync(ctx, logger);
+
+        LogEntry log = Assert.Single(loggerFactory.Sink.LogEntries);
+        log.Message.Should().Be("test");
+        loggerFactory.Sink.Scopes.Should().NotBeEmpty().And.ContainSingle();
+
+        BeginScope scope = loggerFactory.Sink.Scopes.First();
+        scope.Properties.Should().NotBeNull().And.HaveCount(1);
+
+        KeyValuePair<string, object> ipAddress = scope.Properties.First();
+        ipAddress.Key.Should().Be(LogKeys.ClientIP);
+        ipAddress.Value.Should().Be(HeaderIpAddressValue);
+    }
+
+    [Fact]
+    public async Task ClientIpValueAddedToScope()
+    {
+        HttpContext ctx = GetContextWithHeaders(new Dictionary<string, StringValues>
             {
                 { "X-Client-IP", HeaderIpAddressValue }
             });
 
-            ITestLoggerFactory loggerFactory = TestLoggerFactory.Create();
-            ILogger<NetworkLoggingMiddleware> logger = loggerFactory.CreateLogger<NetworkLoggingMiddleware>();
+        ITestLoggerFactory loggerFactory = TestLoggerFactory.Create();
+        ILogger<NetworkLoggingMiddleware> logger = loggerFactory.CreateLogger<NetworkLoggingMiddleware>();
 
-            RequestDelegate requestDelegate = new RequestDelegate((innerContext) =>
-            {
-                logger.LogInformation("test");
-                return Task.FromResult(0);
-            });
-
-            NetworkLoggingMiddleware middleware = new NetworkLoggingMiddleware(requestDelegate);
-
-            await middleware.InvokeAsync(ctx, logger);
-
-            LogEntry log = Assert.Single(loggerFactory.Sink.LogEntries);
-            log.Message.Should().Be("test");
-            loggerFactory.Sink.Scopes.Should().NotBeEmpty().And.ContainSingle();
-
-            BeginScope scope = loggerFactory.Sink.Scopes.First();
-            scope.Properties.Should().NotBeNull().And.HaveCount(1);
-
-            KeyValuePair<string, object> ipAddress = scope.Properties.First();
-            ipAddress.Key.Should().Be(LogKeys.ClientIP);
-            ipAddress.Value.Should().Be(HeaderIpAddressValue);
-        }
-
-        private HttpContext GetContextWithHeaders(Dictionary<string, StringValues> headers)
+        RequestDelegate requestDelegate = new RequestDelegate((innerContext) =>
         {
-            Mock<HttpContext> httpCtxMock = new Mock<HttpContext>();
-            httpCtxMock.Setup(m => m.Connection.RemoteIpAddress).Returns(IPAddress.Parse(ConnectionIpAddressValue));
+            logger.LogInformation("test");
+            return Task.FromResult(0);
+        });
 
-            MockRepository mocks = new MockRepository(MockBehavior.Default);
-            Mock<HttpRequest> mockRequest = mocks.Create<HttpRequest>();
+        NetworkLoggingMiddleware middleware = new NetworkLoggingMiddleware(requestDelegate);
 
-            IHeaderDictionary headerDic = new HeaderDictionary(headers);
+        await middleware.InvokeAsync(ctx, logger);
 
-            mockRequest.Setup(p => p.Headers).Returns(headerDic);
-            httpCtxMock.Setup(p => p.Request).Returns(mockRequest.Object);
+        LogEntry log = Assert.Single(loggerFactory.Sink.LogEntries);
+        log.Message.Should().Be("test");
+        loggerFactory.Sink.Scopes.Should().NotBeEmpty().And.ContainSingle();
 
-            return httpCtxMock.Object;
-        }
+        BeginScope scope = loggerFactory.Sink.Scopes.First();
+        scope.Properties.Should().NotBeNull().And.HaveCount(1);
+
+        KeyValuePair<string, object> ipAddress = scope.Properties.First();
+        ipAddress.Key.Should().Be(LogKeys.ClientIP);
+        ipAddress.Value.Should().Be(HeaderIpAddressValue);
+    }
+
+    private HttpContext GetContextWithHeaders(Dictionary<string, StringValues> headers)
+    {
+        Mock<HttpContext> httpCtxMock = new Mock<HttpContext>();
+        httpCtxMock.Setup(m => m.Connection.RemoteIpAddress).Returns(IPAddress.Parse(ConnectionIpAddressValue));
+
+        MockRepository mocks = new MockRepository(MockBehavior.Default);
+        Mock<HttpRequest> mockRequest = mocks.Create<HttpRequest>();
+
+        IHeaderDictionary headerDic = new HeaderDictionary(headers);
+
+        mockRequest.Setup(p => p.Headers).Returns(headerDic);
+        httpCtxMock.Setup(p => p.Request).Returns(mockRequest.Object);
+
+        return httpCtxMock.Object;
     }
 }
