@@ -1,5 +1,5 @@
 # Delobytes.AspNetCore.Logging
-Logging middlewares for web-API apps on .Net 5.
+Logging middlewares for web-API apps.
 
 [RU](README.md), [EN](README.en.md)
 

@@ -1,5 +1,5 @@
 ﻿# Delobytes.AspNetCore.Logging
-Прослойки логирования для веб-апи приложений на .Net 5.
+Прослойки логирования для веб-апи приложений.
 
 [RU](README.md), [EN](README.en.md)
 
