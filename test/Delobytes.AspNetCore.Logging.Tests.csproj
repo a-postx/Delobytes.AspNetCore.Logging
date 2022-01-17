@@ -6,6 +6,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Using Include="System" />
+    <Using Include="System.Linq" />
+    <Using Include="System.Collections.Generic" />
+    <Using Include="System.Threading.Tasks" />
+    <Using Include="Microsoft.AspNetCore.Http" />
+    <Using Include="Microsoft.Extensions.Logging" />
+    <Using Include="Microsoft.Extensions.Options" />
+    <Using Include="FluentAssertions" />
+    <Using Include="Moq" />
+    <Using Include="Xunit" />
+    <Using Include="MELT" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="6.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
     <PackageReference Include="FluentAssertions" Version="6.2.0" />
