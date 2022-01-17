@@ -15,10 +15,7 @@ public static class ApplicationBuilderExtensions
     /// <returns></returns>
     public static IApplicationBuilder UseNetworkLogging(this IApplicationBuilder app)
     {
-        if (app == null)
-        {
-            throw new ArgumentNullException(nameof(app));
-        }
+        ArgumentNullException.ThrowIfNull(app);
 
         return app.UseMiddleware<NetworkLoggingMiddleware>();
     }
@@ -31,10 +28,7 @@ public static class ApplicationBuilderExtensions
     /// <returns></returns>
     public static IApplicationBuilder UseClaimsLogging(this IApplicationBuilder app)
     {
-        if (app == null)
-        {
-            throw new ArgumentNullException(nameof(app));
-        }
+        ArgumentNullException.ThrowIfNull(app);
 
         return app.UseMiddleware<ClaimsLoggingMiddleware>();
     }
@@ -46,10 +40,7 @@ public static class ApplicationBuilderExtensions
     /// <returns></returns>
     public static IApplicationBuilder UseHttpContextLogging(this IApplicationBuilder app)
     {
-        if (app == null)
-        {
-            throw new ArgumentNullException(nameof(app));
-        }
+        ArgumentNullException.ThrowIfNull(app);
 
         return app.UseMiddleware<HttpContextLoggingMiddleware>();
     }
@@ -61,10 +52,7 @@ public static class ApplicationBuilderExtensions
     /// <returns></returns>
     public static IApplicationBuilder UseIdempotencyContextLogging(this IApplicationBuilder app)
     {
-        if (app == null)
-        {
-            throw new ArgumentNullException(nameof(app));
-        }
+        ArgumentNullException.ThrowIfNull(app);
 
         return app.UseMiddleware<IdempotencyLoggingMiddleware>();
     }

@@ -16,10 +16,7 @@ public static class LoggingServiceCollectionExtensions
     /// <returns>Ссылка на этот экземпляр после завершения операции.</returns>
     public static IServiceCollection AddClaimsLogging(this IServiceCollection services, Action<ClaimsLoggingOptions> configure = null)
     {
-        if (services is null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentNullException.ThrowIfNull(services);
 
         if (configure is not null)
         {
@@ -39,10 +36,7 @@ public static class LoggingServiceCollectionExtensions
     /// <returns>Ссылка на этот экземпляр после завершения операции.</returns>
     public static IServiceCollection AddHttpContextLogging(this IServiceCollection services, Action<HttpContextLoggingOptions> configure = null)
     {
-        if (services is null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentNullException.ThrowIfNull(services);
 
         if (configure is not null)
         {
@@ -62,10 +56,7 @@ public static class LoggingServiceCollectionExtensions
     /// <returns>Ссылка на этот экземпляр после завершения операции.</returns>
     public static IServiceCollection AddIdempotencyContextLogging(this IServiceCollection services, Action<IdempotencyLoggingOptions> configure = null)
     {
-        if (services is null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentNullException.ThrowIfNull(services);
 
         if (configure is not null)
         {
