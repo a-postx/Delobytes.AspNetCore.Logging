@@ -65,18 +65,18 @@ public class HttpContextLoggingMiddleware
 
             foreach (string key in _options.SkipRequestHeaders)
             {
-                requestHeaders.Remove($"{LogKeys.RequestHeaders}.{key}");
+                requestHeaders.Remove($"{LoggingLogKeys.RequestHeaders}.{key}");
             }
 
             using (logger.BeginScope(requestHeaders))
             {
-                using (logger.BeginScopeWith((LogKeys.RequestProtocol, httpCtx.Request.Protocol),
-                    (LogKeys.RequestScheme, httpCtx.Request.Scheme),
-                    (LogKeys.RequestHost, httpCtx.Request.Host.Value),
-                    (LogKeys.RequestMethod, httpCtx.Request.Method),
-                    (LogKeys.RequestPath, httpCtx.Request.Path),
-                    (LogKeys.RequestQuery, httpCtx.Request.QueryString),
-                    (LogKeys.RequestPathAndQuery, GetFullPath(httpCtx))))
+                using (logger.BeginScopeWith((LoggingLogKeys.RequestProtocol, httpCtx.Request.Protocol),
+                    (LoggingLogKeys.RequestScheme, httpCtx.Request.Scheme),
+                    (LoggingLogKeys.RequestHost, httpCtx.Request.Host.Value),
+                    (LoggingLogKeys.RequestMethod, httpCtx.Request.Method),
+                    (LoggingLogKeys.RequestPath, httpCtx.Request.Path),
+                    (LoggingLogKeys.RequestQuery, httpCtx.Request.QueryString),
+                    (LoggingLogKeys.RequestPathAndQuery, GetFullPath(httpCtx))))
                 {
                     if (_options.LogRequestBody)
                     {
@@ -93,7 +93,7 @@ public class HttpContextLoggingMiddleware
                             initialRequestBody = initialRequestBody.Substring(0, _options.MaxBodyLength);
                         }
 
-                        using (logger.BeginScopeWith((LogKeys.RequestBody, initialRequestBody)))
+                        using (logger.BeginScopeWith((LoggingLogKeys.RequestBody, initialRequestBody)))
                         {
                             logger.LogInformation("HTTP request received.");
                         }
@@ -130,20 +130,20 @@ public class HttpContextLoggingMiddleware
 
                 foreach (string key in _options.SkipResponseHeaders)
                 {
-                    responseHeaders.Remove($"{LogKeys.ResponseHeaders}.{key}");
+                    responseHeaders.Remove($"{LoggingLogKeys.ResponseHeaders}.{key}");
                 }
 
                 using (logger.BeginScope(responseHeaders))
-                using (logger.BeginScopeWith((LogKeys.StatusCode, httpCtx.Response.StatusCode),
-                    (LogKeys.ResponseBody, endResponseBody),
-                    (LogKeys.RequestProtocol, httpCtx.Request.Protocol),
-                    (LogKeys.RequestScheme, httpCtx.Request.Scheme),
-                    (LogKeys.RequestHost, httpCtx.Request.Host.Value),
-                    (LogKeys.RequestMethod, httpCtx.Request.Method),
-                    (LogKeys.RequestPath, httpCtx.Request.Path),
-                    (LogKeys.RequestQuery, httpCtx.Request.QueryString),
-                    (LogKeys.RequestPathAndQuery, GetFullPath(httpCtx)),
-                    (LogKeys.RequestAborted, httpCtx.RequestAborted.IsCancellationRequested)))
+                using (logger.BeginScopeWith((LoggingLogKeys.StatusCode, httpCtx.Response.StatusCode),
+                    (LoggingLogKeys.ResponseBody, endResponseBody),
+                    (LoggingLogKeys.RequestProtocol, httpCtx.Request.Protocol),
+                    (LoggingLogKeys.RequestScheme, httpCtx.Request.Scheme),
+                    (LoggingLogKeys.RequestHost, httpCtx.Request.Host.Value),
+                    (LoggingLogKeys.RequestMethod, httpCtx.Request.Method),
+                    (LoggingLogKeys.RequestPath, httpCtx.Request.Path),
+                    (LoggingLogKeys.RequestQuery, httpCtx.Request.QueryString),
+                    (LoggingLogKeys.RequestPathAndQuery, GetFullPath(httpCtx)),
+                    (LoggingLogKeys.RequestAborted, httpCtx.RequestAborted.IsCancellationRequested)))
                 {
                     logger.LogInformation("HTTP request handled.");
                 }
@@ -158,19 +158,19 @@ public class HttpContextLoggingMiddleware
 
                 foreach (string key in _options.SkipResponseHeaders)
                 {
-                    responseHeaders.Remove($"{LogKeys.ResponseHeaders}.{key}");
+                    responseHeaders.Remove($"{LoggingLogKeys.ResponseHeaders}.{key}");
                 }
 
                 using (logger.BeginScope(responseHeaders))
-                using (logger.BeginScopeWith((LogKeys.StatusCode, httpCtx.Response.StatusCode),
-                    (LogKeys.RequestProtocol, httpCtx.Request.Protocol),
-                    (LogKeys.RequestScheme, httpCtx.Request.Scheme),
-                    (LogKeys.RequestHost, httpCtx.Request.Host.Value),
-                    (LogKeys.RequestMethod, httpCtx.Request.Method),
-                    (LogKeys.RequestPath, httpCtx.Request.Path),
-                    (LogKeys.RequestQuery, httpCtx.Request.QueryString),
-                    (LogKeys.RequestPathAndQuery, GetFullPath(httpCtx)),
-                    (LogKeys.RequestAborted, httpCtx.RequestAborted.IsCancellationRequested)))
+                using (logger.BeginScopeWith((LoggingLogKeys.StatusCode, httpCtx.Response.StatusCode),
+                    (LoggingLogKeys.RequestProtocol, httpCtx.Request.Protocol),
+                    (LoggingLogKeys.RequestScheme, httpCtx.Request.Scheme),
+                    (LoggingLogKeys.RequestHost, httpCtx.Request.Host.Value),
+                    (LoggingLogKeys.RequestMethod, httpCtx.Request.Method),
+                    (LoggingLogKeys.RequestPath, httpCtx.Request.Path),
+                    (LoggingLogKeys.RequestQuery, httpCtx.Request.QueryString),
+                    (LoggingLogKeys.RequestPathAndQuery, GetFullPath(httpCtx)),
+                    (LoggingLogKeys.RequestAborted, httpCtx.RequestAborted.IsCancellationRequested)))
                 {
                     logger.LogInformation("HTTP request handled.");
                 }
@@ -184,7 +184,7 @@ public class HttpContextLoggingMiddleware
 
     private static Dictionary<string, object> GetValidRequestHeaders(IHeaderDictionary headers)
     {
-        Dictionary<string, object> validHeaders = ConvertHeadersToDicWithPrefix(headers, LogKeys.RequestHeaders);
+        Dictionary<string, object> validHeaders = ConvertHeadersToDicWithPrefix(headers, LoggingLogKeys.RequestHeaders);
 
         //если какое-то значение заголовка приводится к неопределённости, то всё событие
         //может не логироваться у определённых провайдеров (например, ELK), поэтому удаляем
@@ -200,7 +200,7 @@ public class HttpContextLoggingMiddleware
 
     private static Dictionary<string, object> GetValidResponseHeaders(IHeaderDictionary headers)
     {
-        Dictionary<string, object> validHeaders = ConvertHeadersToDicWithPrefix(headers, LogKeys.ResponseHeaders);
+        Dictionary<string, object> validHeaders = ConvertHeadersToDicWithPrefix(headers, LoggingLogKeys.ResponseHeaders);
 
         IEnumerable<string> emptyHeaders = validHeaders.Where(e => e.Value is null).Select(s => s.Key);
 

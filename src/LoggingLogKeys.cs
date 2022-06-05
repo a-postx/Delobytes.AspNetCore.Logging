@@ -3,7 +3,7 @@ namespace Delobytes.AspNetCore.Logging;
 /// <summary>
 /// Названия атрибутов, которые записываются в логи.
 /// </summary>
-public static class LogKeys
+public static class LoggingLogKeys
 {
     /// <summary>
     /// Адрес клиента.

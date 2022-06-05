@@ -68,11 +68,11 @@ public class ClaimsLoggingMiddlewareTests
         scope.Properties.Should().NotBeNull().And.HaveCount(2);
 
         KeyValuePair<string, object> userId = scope.Properties.First();
-        userId.Key.Should().Be(LogKeys.UserId);
+        userId.Key.Should().Be(LoggingLogKeys.UserId);
         userId.Value.Should().Be("23efd012-8776-492f-9cbd-72eb11b6b8d4");
 
         KeyValuePair<string, object> tenantId = scope.Properties.Last();
-        tenantId.Key.Should().Be(LogKeys.TenantId);
+        tenantId.Key.Should().Be(LoggingLogKeys.TenantId);
         tenantId.Value.Should().Be("ef725698-2a7d-4674-b1b8-9f63498ec87e");
     }
 
@@ -108,7 +108,7 @@ public class ClaimsLoggingMiddlewareTests
         firstScope.Properties.Should().NotBeNull().And.HaveCount(2);
 
         KeyValuePair<string, object> userId = firstScope.Properties.First();
-        userId.Key.Should().Be(LogKeys.UserId);
+        userId.Key.Should().Be(LoggingLogKeys.UserId);
         userId.Value.Should().Be("23efd012-8776-492f-9cbd-72eb11b6b8d4");
 
         KeyValuePair<string, object> tenantId = firstScope.Properties.Last();

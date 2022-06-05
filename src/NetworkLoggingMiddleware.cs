@@ -44,7 +44,7 @@ public class NetworkLoggingMiddleware
             clientIp = !string.IsNullOrEmpty(directValue) ? directValue : "0.0.0.0";
         }
 
-        using (logger.BeginScopeWith((LogKeys.ClientIP, clientIp)))
+        using (logger.BeginScopeWith((LoggingLogKeys.ClientIP, clientIp)))
         {
             await _next(context);
         }

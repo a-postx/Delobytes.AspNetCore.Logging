@@ -214,6 +214,96 @@
              <param name="logger">Логер.</param>
             <param name="paramsAndValues">Параметры и их значения, которые нужно добавить в контекст.</param>
         </member>
+        <member name="T:Delobytes.AspNetCore.Logging.LoggingLogKeys">
+            <summary>
+            Названия атрибутов, которые записываются в логи.
+            </summary>
+        </member>
+        <member name="F:Delobytes.AspNetCore.Logging.LoggingLogKeys.ClientIP">
+            <summary>
+            Адрес клиента.
+            </summary>
+        </member>
+        <member name="F:Delobytes.AspNetCore.Logging.LoggingLogKeys.CorrelationId">
+            <summary>
+            Идентификатор корреляции.
+            </summary>
+        </member>
+        <member name="F:Delobytes.AspNetCore.Logging.LoggingLogKeys.TenantId">
+            <summary>
+            Идентификатор арендатора.
+            </summary>
+        </member>
+        <member name="F:Delobytes.AspNetCore.Logging.LoggingLogKeys.UserId">
+            <summary>
+            Идентификатор пользователя.
+            </summary>
+        </member>
+        <member name="F:Delobytes.AspNetCore.Logging.LoggingLogKeys.RequestProtocol">
+            <summary>
+            Протокол запроса.
+            </summary>
+        </member>
+        <member name="F:Delobytes.AspNetCore.Logging.LoggingLogKeys.RequestScheme">
+            <summary>
+            Схема запроса.
+            </summary>
+        </member>
+        <member name="F:Delobytes.AspNetCore.Logging.LoggingLogKeys.RequestHost">
+            <summary>
+            Хост, с которого пришёл запрос.
+            </summary>
+        </member>
+        <member name="F:Delobytes.AspNetCore.Logging.LoggingLogKeys.RequestMethod">
+            <summary>
+            Метод запроса.
+            </summary>
+        </member>
+        <member name="F:Delobytes.AspNetCore.Logging.LoggingLogKeys.RequestPath">
+            <summary>
+            Путь запроса.
+            </summary>
+        </member>
+        <member name="F:Delobytes.AspNetCore.Logging.LoggingLogKeys.RequestQuery">
+            <summary>
+            Параметры запроса.
+            </summary>
+        </member>
+        <member name="F:Delobytes.AspNetCore.Logging.LoggingLogKeys.RequestPathAndQuery">
+            <summary>
+            Путь и параметры запроса.
+            </summary>
+        </member>
+        <member name="F:Delobytes.AspNetCore.Logging.LoggingLogKeys.RequestHeaders">
+            <summary>
+            Заголовки запроса.
+            </summary>
+        </member>
+        <member name="F:Delobytes.AspNetCore.Logging.LoggingLogKeys.RequestBody">
+            <summary>
+            Тело запроса.
+            </summary>
+        </member>
+        <member name="F:Delobytes.AspNetCore.Logging.LoggingLogKeys.RequestAborted">
+            <summary>
+            Признак отмены запроса.
+            </summary>
+        </member>
+        <member name="F:Delobytes.AspNetCore.Logging.LoggingLogKeys.StatusCode">
+            <summary>
+            Код ответа.
+            </summary>
+        </member>
+        <member name="F:Delobytes.AspNetCore.Logging.LoggingLogKeys.ResponseHeaders">
+            <summary>
+            Заголовки ответа.
+            </summary>
+        </member>
+        <member name="F:Delobytes.AspNetCore.Logging.LoggingLogKeys.ResponseBody">
+            <summary>
+            Тело ответа.
+            </summary>
+        </member>
         <member name="T:Delobytes.AspNetCore.Logging.LoggingServiceCollectionExtensions">
             <summary>
             Расширения <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> для регистрации сервисов.
@@ -242,96 +332,6 @@
             <param name="services"><see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> в которую нужно добавить логирование.</param>
             <param name="configure"><see cref="T:System.Action`1"/> для настройки <see cref="T:Delobytes.AspNetCore.Logging.IdempotencyLoggingOptions"/>.</param>
             <returns>Ссылка на этот экземпляр после завершения операции.</returns>
-        </member>
-        <member name="T:Delobytes.AspNetCore.Logging.LogKeys">
-            <summary>
-            Названия атрибутов, которые записываются в логи.
-            </summary>
-        </member>
-        <member name="F:Delobytes.AspNetCore.Logging.LogKeys.ClientIP">
-            <summary>
-            Адрес клиента.
-            </summary>
-        </member>
-        <member name="F:Delobytes.AspNetCore.Logging.LogKeys.CorrelationId">
-            <summary>
-            Идентификатор корреляции.
-            </summary>
-        </member>
-        <member name="F:Delobytes.AspNetCore.Logging.LogKeys.TenantId">
-            <summary>
-            Идентификатор арендатора.
-            </summary>
-        </member>
-        <member name="F:Delobytes.AspNetCore.Logging.LogKeys.UserId">
-            <summary>
-            Идентификатор пользователя.
-            </summary>
-        </member>
-        <member name="F:Delobytes.AspNetCore.Logging.LogKeys.RequestProtocol">
-            <summary>
-            Протокол запроса.
-            </summary>
-        </member>
-        <member name="F:Delobytes.AspNetCore.Logging.LogKeys.RequestScheme">
-            <summary>
-            Схема запроса.
-            </summary>
-        </member>
-        <member name="F:Delobytes.AspNetCore.Logging.LogKeys.RequestHost">
-            <summary>
-            Хост, с которого пришёл запрос.
-            </summary>
-        </member>
-        <member name="F:Delobytes.AspNetCore.Logging.LogKeys.RequestMethod">
-            <summary>
-            Метод запроса.
-            </summary>
-        </member>
-        <member name="F:Delobytes.AspNetCore.Logging.LogKeys.RequestPath">
-            <summary>
-            Путь запроса.
-            </summary>
-        </member>
-        <member name="F:Delobytes.AspNetCore.Logging.LogKeys.RequestQuery">
-            <summary>
-            Параметры запроса.
-            </summary>
-        </member>
-        <member name="F:Delobytes.AspNetCore.Logging.LogKeys.RequestPathAndQuery">
-            <summary>
-            Путь и параметры запроса.
-            </summary>
-        </member>
-        <member name="F:Delobytes.AspNetCore.Logging.LogKeys.RequestHeaders">
-            <summary>
-            Заголовки запроса.
-            </summary>
-        </member>
-        <member name="F:Delobytes.AspNetCore.Logging.LogKeys.RequestBody">
-            <summary>
-            Тело запроса.
-            </summary>
-        </member>
-        <member name="F:Delobytes.AspNetCore.Logging.LogKeys.RequestAborted">
-            <summary>
-            Признак отмены запроса.
-            </summary>
-        </member>
-        <member name="F:Delobytes.AspNetCore.Logging.LogKeys.StatusCode">
-            <summary>
-            Код ответа.
-            </summary>
-        </member>
-        <member name="F:Delobytes.AspNetCore.Logging.LogKeys.ResponseHeaders">
-            <summary>
-            Заголовки ответа.
-            </summary>
-        </member>
-        <member name="F:Delobytes.AspNetCore.Logging.LogKeys.ResponseBody">
-            <summary>
-            Тело ответа.
-            </summary>
         </member>
         <member name="T:Delobytes.AspNetCore.Logging.NetworkLoggingMiddleware">
             <summary>

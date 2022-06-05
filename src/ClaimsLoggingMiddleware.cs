@@ -34,7 +34,7 @@ public class ClaimsLoggingMiddleware
             string userIdClaimValue = context.User.GetClaimValue<string>(_options.UserIdClaimName);
             string tenantIdClaimValue = context.User.GetClaimValue<string>(_options.TenantIdClaimName);
 
-            using (logger.BeginScopeWith((LogKeys.UserId, userIdClaimValue), (LogKeys.TenantId, tenantIdClaimValue)))
+            using (logger.BeginScopeWith((LoggingLogKeys.UserId, userIdClaimValue), (LoggingLogKeys.TenantId, tenantIdClaimValue)))
             {
                 if (_options.ClaimNames.Length > 0)
                 {

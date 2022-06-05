@@ -34,7 +34,7 @@ public class NetworkLoggingMiddlewareTests
         scope.Properties.Should().NotBeNull().And.HaveCount(1);
 
         KeyValuePair<string, object> ipAddress = scope.Properties.First();
-        ipAddress.Key.Should().Be(LogKeys.ClientIP);
+        ipAddress.Key.Should().Be(LoggingLogKeys.ClientIP);
         ipAddress.Value.Should().Be(ConnectionIpAddressValue);
     }
 
@@ -67,7 +67,7 @@ public class NetworkLoggingMiddlewareTests
         scope.Properties.Should().NotBeNull().And.HaveCount(1);
 
         KeyValuePair<string, object> ipAddress = scope.Properties.First();
-        ipAddress.Key.Should().Be(LogKeys.ClientIP);
+        ipAddress.Key.Should().Be(LoggingLogKeys.ClientIP);
         ipAddress.Value.Should().Be(HeaderIpAddressValue);
     }
 
@@ -100,7 +100,7 @@ public class NetworkLoggingMiddlewareTests
         scope.Properties.Should().NotBeNull().And.HaveCount(1);
 
         KeyValuePair<string, object> ipAddress = scope.Properties.First();
-        ipAddress.Key.Should().Be(LogKeys.ClientIP);
+        ipAddress.Key.Should().Be(LoggingLogKeys.ClientIP);
         ipAddress.Value.Should().Be(HeaderIpAddressValue);
     }
 
