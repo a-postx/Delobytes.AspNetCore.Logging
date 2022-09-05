@@ -40,7 +40,7 @@ public class NetworkLoggingMiddleware
         }
         else
         {
-            string directValue = httpContext.Connection.RemoteIpAddress?.ToString();
+            string? directValue = httpContext.Connection.RemoteIpAddress?.ToString();
             clientIp = !string.IsNullOrEmpty(directValue) ? directValue : "0.0.0.0";
         }
 
@@ -52,7 +52,14 @@ public class NetworkLoggingMiddleware
 
     private static string GetIpFromHeaderString(StringValues ipAddresses)
     {
-        string[] addresses = ipAddresses.LastOrDefault().Split(',');
+        string? lastValue = ipAddresses.LastOrDefault();
+
+        if (lastValue == null)
+        {
+            return string.Empty;
+        }
+
+        string[] addresses = lastValue.Split(',');
 
         if (addresses.Length != 0)
         {

@@ -224,7 +224,7 @@ public class HttpContextLoggingMiddleware
             the RawTarget returns an empty string instead of null, in that case we can't use
             ?? as fallback.
         */
-        string requestPath = httpContext.Features.Get<IHttpRequestFeature>()?.RawTarget;
+        string? requestPath = httpContext.Features.Get<IHttpRequestFeature>()?.RawTarget;
 
         if (string.IsNullOrEmpty(requestPath))
         {

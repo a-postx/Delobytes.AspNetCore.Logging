@@ -7,7 +7,7 @@ public class ClaimsLoggingMiddlewareTests
     [Fact]
     public async Task NotThrows_WhenClaimIsNotFound()
     {
-        Exception exception = null;
+        Exception? exception = null;
 
         ClaimsIdentity identity = new ClaimsIdentity(GetEmptyClaims(), "TestAuthType");
         ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);

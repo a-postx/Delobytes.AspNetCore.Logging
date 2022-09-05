@@ -13,7 +13,7 @@ public static class LoggingServiceCollectionExtensions
     /// <param name="services"><see cref="IServiceCollection"/> в которую нужно добавить логирование.</param>
     /// <param name="configure"><see cref="Action{AuthenticationContextOptions}"/> для настройки <see cref="ClaimsLoggingOptions"/>.</param>
     /// <returns>Ссылка на этот экземпляр после завершения операции.</returns>
-    public static IServiceCollection AddClaimsLogging(this IServiceCollection services, Action<ClaimsLoggingOptions> configure = null)
+    public static IServiceCollection AddClaimsLogging(this IServiceCollection services, Action<ClaimsLoggingOptions>? configure = null)
     {
         ArgumentNullException.ThrowIfNull(services);
 
@@ -33,7 +33,7 @@ public static class LoggingServiceCollectionExtensions
     /// <param name="services"><see cref="IServiceCollection"/> в которую нужно добавить логирование.</param>
     /// <param name="configure"><see cref="Action{HttpContextLoggingOptions}"/> для настройки <see cref="HttpContextLoggingOptions"/>.</param>
     /// <returns>Ссылка на этот экземпляр после завершения операции.</returns>
-    public static IServiceCollection AddHttpContextLogging(this IServiceCollection services, Action<HttpContextLoggingOptions> configure = null)
+    public static IServiceCollection AddHttpContextLogging(this IServiceCollection services, Action<HttpContextLoggingOptions>? configure = null)
     {
         ArgumentNullException.ThrowIfNull(services);
 
@@ -53,7 +53,7 @@ public static class LoggingServiceCollectionExtensions
     /// <param name="services"><see cref="IServiceCollection"/> в которую нужно добавить логирование.</param>
     /// <param name="configure"><see cref="Action{IdempotencyContextLoggingOptions}"/> для настройки <see cref="IdempotencyLoggingOptions"/>.</param>
     /// <returns>Ссылка на этот экземпляр после завершения операции.</returns>
-    public static IServiceCollection AddIdempotencyContextLogging(this IServiceCollection services, Action<IdempotencyLoggingOptions> configure = null)
+    public static IServiceCollection AddIdempotencyContextLogging(this IServiceCollection services, Action<IdempotencyLoggingOptions>? configure = null)
     {
         ArgumentNullException.ThrowIfNull(services);
 

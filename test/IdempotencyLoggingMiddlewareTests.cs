@@ -9,7 +9,7 @@ public class IdempotencyLoggingMiddlewareTests
     [Fact]
     public async Task NotThrows_WhenIdempotencyHeaderNotFound()
     {
-        Exception exception = null;
+        Exception? exception = null;
 
         HttpContext ctx = GetContextWithHeaders(new Dictionary<string, StringValues>
             {

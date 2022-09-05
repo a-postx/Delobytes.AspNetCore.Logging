@@ -60,11 +60,11 @@ public class HttpContextLoggingMiddlewareTests
         Scope responsePropertiesScope = responseLog.Scopes.Last();
         responsePropertiesScope.Properties.Should().HaveCount(9);
 
-        BeginScope requestHeaderScope = loggerFactory.Sink.Scopes
+        BeginScope? requestHeaderScope = loggerFactory.Sink.Scopes
             .Where(s => s.Properties.Any(e => e.Key.Split(".")[0] == LoggingLogKeys.RequestHeaders)).SingleOrDefault();
         requestHeaderScope.Should().NotBeNull();
 
-        BeginScope responseHeaderScope = loggerFactory.Sink.Scopes
+        BeginScope? responseHeaderScope = loggerFactory.Sink.Scopes
             .Where(s => s.Properties.Any(e => e.Key.Split(".")[0] == LoggingLogKeys.ResponseHeaders)).SingleOrDefault();
         responseHeaderScope.Should().NotBeNull();
     }
@@ -132,7 +132,8 @@ public class HttpContextLoggingMiddlewareTests
         Scope requestPropertiesScope = requestLog.Scopes.Last();
         KeyValuePair<string, object> requestBodyProperty = requestPropertiesScope.Properties.First();
         requestBodyProperty.Key.Should().Be(LoggingLogKeys.RequestBody);
-        string requestBody = requestBodyProperty.Value as string;
+        string? requestBody = requestBodyProperty.Value as string;
+        requestBody.Should().NotBeNullOrEmpty();
         requestBody.Should().Be(LongBody);
 
 
@@ -140,7 +141,8 @@ public class HttpContextLoggingMiddlewareTests
         Scope responsePropertiesScope = responseLog.Scopes.Last();
         KeyValuePair<string, object> responseBodyProperty = responsePropertiesScope.Properties
             .Where(e => e.Key == LoggingLogKeys.ResponseBody).First();
-        string responseBody = responseBodyProperty.Value as string;
+        string? responseBody = responseBodyProperty.Value as string;
+        responseBody.Should().NotBeNullOrEmpty();
         responseBody.Should().Be(LongBody);
     }
 
@@ -164,7 +166,8 @@ public class HttpContextLoggingMiddlewareTests
         Scope requestPropertiesScope = requestLog.Scopes.Last();
         KeyValuePair<string, object> requestBodyProperty = requestPropertiesScope.Properties.First();
         requestBodyProperty.Key.Should().Be(LoggingLogKeys.RequestBody);
-        string requestBody = requestBodyProperty.Value as string;
+        string? requestBody = requestBodyProperty.Value as string;
+        requestBody.Should().NotBeNullOrEmpty();
         requestBody.Should().Be(LongBody.Substring(0, 1));
 
 
@@ -172,7 +175,8 @@ public class HttpContextLoggingMiddlewareTests
         Scope responsePropertiesScope = responseLog.Scopes.Last();
         KeyValuePair<string, object> responseBodyProperty = responsePropertiesScope.Properties
             .Where(e => e.Key == LoggingLogKeys.ResponseBody).First();
-        string responseBody = responseBodyProperty.Value as string;
+        string? responseBody = responseBodyProperty.Value as string;
+        responseBody.Should().NotBeNullOrEmpty();
         responseBody.Should().Be(LongBody.Substring(0, 1));
     }
 
