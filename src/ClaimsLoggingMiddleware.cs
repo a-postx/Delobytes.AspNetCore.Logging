@@ -31,8 +31,8 @@ public class ClaimsLoggingMiddleware
 
         if (context.User.Identity is not null && context.User.Identity.IsAuthenticated)
         {
-            string userIdClaimValue = context.User.GetClaimValue<string>(_options.UserIdClaimName);
-            string tenantIdClaimValue = context.User.GetClaimValue<string>(_options.TenantIdClaimName);
+            string? userIdClaimValue = context.User.GetClaimValue<string>(_options.UserIdClaimName);
+            string? tenantIdClaimValue = context.User.GetClaimValue<string>(_options.TenantIdClaimName);
 
             using (logger.BeginScopeWith((LoggingLogKeys.UserId, userIdClaimValue), (LoggingLogKeys.TenantId, tenantIdClaimValue)))
             {
@@ -42,7 +42,7 @@ public class ClaimsLoggingMiddleware
 
                     foreach (string claimName in _options.ClaimNames)
                     {
-                        string claimValue = context.User.GetClaimValue<string>(claimName);
+                        string? claimValue = context.User.GetClaimValue<string>(claimName);
 
                         if (!string.IsNullOrWhiteSpace(claimValue))
                         {
