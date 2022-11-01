@@ -99,12 +99,12 @@
             <param name="next">Следующая прослойка в конвейере.</param>
             <param name="options">Настроки конфигурации.</param>
         </member>
-        <member name="M:Delobytes.AspNetCore.Logging.HttpContextLoggingMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext,Microsoft.Extensions.Logging.ILoggerFactory)">
+        <member name="M:Delobytes.AspNetCore.Logging.HttpContextLoggingMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext,Microsoft.Extensions.Logging.ILogger{Delobytes.AspNetCore.Logging.HttpContextLoggingMiddleware})">
             <summary>
             Обработчик, который помещает свойства HTTP-контекста в контекст логирования.
             </summary>
             <param name="httpContext"><see cref="T:Microsoft.AspNetCore.Http.HttpContext"/> текущего запроса.</param>
-            <param name="loggerFactory">Экземпляр <see cref="T:Microsoft.Extensions.Logging.ILoggerFactory"/>.</param>
+            <param name="logger">Экземпляр <see cref="T:Microsoft.Extensions.Logging.ILogger"/>.</param>
             <returns></returns>
         </member>
         <member name="T:Delobytes.AspNetCore.Logging.HttpContextLoggingOptions">

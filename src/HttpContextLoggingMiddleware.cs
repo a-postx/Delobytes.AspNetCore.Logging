@@ -3,7 +3,6 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.Extensions.Logging;
 
 namespace Delobytes.AspNetCore.Logging;
 
@@ -30,14 +29,12 @@ public class HttpContextLoggingMiddleware
     /// Обработчик, который помещает свойства HTTP-контекста в контекст логирования.
     /// </summary>
     /// <param name="httpContext"><see cref="HttpContext"/> текущего запроса.</param>
-    /// <param name="loggerFactory">Экземпляр <see cref="ILoggerFactory"/>.</param>
+    /// <param name="logger">Экземпляр <see cref="ILogger"/>.</param>
     /// <returns></returns>
-    public async Task InvokeAsync(HttpContext httpContext, ILoggerFactory loggerFactory)
+    public async Task InvokeAsync(HttpContext httpContext, ILogger<HttpContextLoggingMiddleware> logger)
     {
         ArgumentNullException.ThrowIfNull(nameof(httpContext));
-        ArgumentNullException.ThrowIfNull(nameof(loggerFactory));
-
-        ILogger logger = loggerFactory.CreateLogger<HttpContextLoggingMiddleware>();
+        ArgumentNullException.ThrowIfNull(nameof(logger));
 
         if (_options.SkipPaths is null)
         {
