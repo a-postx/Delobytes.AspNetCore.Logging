@@ -27,9 +27,9 @@ jobs:
         os: [ubuntu-latest]
     steps:
     - name: 'Checkout'
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: 'Setup .NET Core'
-      uses: actions/setup-dotnet@v2.0.0
+      uses: actions/setup-dotnet@v3.0.2
       with:
         dotnet-version: '7.0.x'
         include-prerelease: true
@@ -48,7 +48,7 @@ jobs:
     - name: 'Pack'
       run: dotnet pack --no-build --configuration Release src/Delobytes.AspNetCore.Logging.csproj --output distr
     - name: 'Upload package'
-      uses: actions/upload-artifact@v3.0.0
+      uses: actions/upload-artifact@v3.1.1
       with:
         name: ${{matrix.os}}
         path: "distr"
@@ -77,12 +77,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: 'Download Artefact'
-      uses: actions/download-artifact@v3.0.0
+      uses: actions/download-artifact@v3.0.1
       with:
         name: 'ubuntu-latest'
     - name: 'Dotnet NuGet Push'
       run: |
-        dotnet nuget push *.nupkg --source https://nuget.pkg.github.com/Delobytes.AspNetCore.Logging/index.json --skip-duplicate --api-key ${{ github.token }}
+        dotnet nuget push *.nupkg --skip-duplicate --source https://nuget.pkg.github.com/Delobytes.AspNetCore.Logging/index.json --api-key ${{ github.token }}
 
   push-nuget-package:
     name: 'Push NuGet Package'
@@ -90,7 +90,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: 'Download Artefact'
-      uses: actions/download-artifact@v3.0.0
+      uses: actions/download-artifact@v3.0.1
       with:
         name: 'ubuntu-latest'
     - name: 'Dotnet NuGet Push'
