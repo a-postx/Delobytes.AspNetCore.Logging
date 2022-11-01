@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Extensions.Logging;
 
 namespace Delobytes.AspNetCore.Logging;
 
@@ -29,11 +30,14 @@ public class HttpContextLoggingMiddleware
     /// Обработчик, который помещает свойства HTTP-контекста в контекст логирования.
     /// </summary>
     /// <param name="httpContext"><see cref="HttpContext"/> текущего запроса.</param>
-    /// <param name="logger">Экземпляр <see cref="ILogger"/>.</param>
+    /// <param name="loggerFactory">Экземпляр <see cref="ILoggerFactory"/>.</param>
     /// <returns></returns>
-    public async Task InvokeAsync(HttpContext httpContext, ILogger<HttpContextLoggingMiddleware> logger)
+    public async Task InvokeAsync(HttpContext httpContext, ILoggerFactory loggerFactory)
     {
-        HttpContext httpCtx = httpContext ?? throw new ArgumentNullException(nameof(httpContext));
+        ArgumentNullException.ThrowIfNull(nameof(httpContext));
+        ArgumentNullException.ThrowIfNull(nameof(loggerFactory));
+
+        ILogger logger = loggerFactory.CreateLogger<HttpContextLoggingMiddleware>();
 
         if (_options.SkipPaths is null)
         {
@@ -50,18 +54,18 @@ public class HttpContextLoggingMiddleware
             throw new InvalidOperationException($"{nameof(_options.SkipResponseHeaders)} option value is not valid.");
         }
 
-        CancellationToken cancellationToken = httpCtx.RequestAborted;
+        CancellationToken cancellationToken = httpContext.RequestAborted;
 
         bool skipLogging = false;
 
-        if (_options.SkipPaths.Any(p => p.Value == httpCtx.Request.Path))
+        if (_options.SkipPaths.Any(p => p.Value == httpContext.Request.Path))
         {
             skipLogging = true;
         }
 
         if (!skipLogging)
         {
-            Dictionary<string, object> requestHeaders = GetValidRequestHeaders(httpCtx.Request.Headers);
+            Dictionary<string, object> requestHeaders = GetValidRequestHeaders(httpContext.Request.Headers);
 
             foreach (string key in _options.SkipRequestHeaders)
             {
@@ -70,23 +74,23 @@ public class HttpContextLoggingMiddleware
 
             using (logger.BeginScope(requestHeaders))
             {
-                using (logger.BeginScopeWith((LoggingLogKeys.RequestProtocol, httpCtx.Request.Protocol),
-                    (LoggingLogKeys.RequestScheme, httpCtx.Request.Scheme),
-                    (LoggingLogKeys.RequestHost, httpCtx.Request.Host.Value),
-                    (LoggingLogKeys.RequestMethod, httpCtx.Request.Method),
-                    (LoggingLogKeys.RequestPath, httpCtx.Request.Path),
-                    (LoggingLogKeys.RequestQuery, httpCtx.Request.QueryString),
-                    (LoggingLogKeys.RequestPathAndQuery, GetFullPath(httpCtx))))
+                using (logger.BeginScopeWith((LoggingLogKeys.RequestProtocol, httpContext.Request.Protocol),
+                    (LoggingLogKeys.RequestScheme, httpContext.Request.Scheme),
+                    (LoggingLogKeys.RequestHost, httpContext.Request.Host.Value),
+                    (LoggingLogKeys.RequestMethod, httpContext.Request.Method),
+                    (LoggingLogKeys.RequestPath, httpContext.Request.Path),
+                    (LoggingLogKeys.RequestQuery, httpContext.Request.QueryString),
+                    (LoggingLogKeys.RequestPathAndQuery, GetFullPath(httpContext))))
                 {
                     if (_options.LogRequestBody)
                     {
-                        httpCtx.Request.EnableBuffering();
-                        Stream body = httpCtx.Request.Body;
-                        byte[] buffer = new byte[Convert.ToInt32(httpCtx.Request.ContentLength, CultureInfo.InvariantCulture)];
-                        await httpCtx.Request.Body.ReadAsync(buffer.AsMemory(0, buffer.Length), cancellationToken);
+                        httpContext.Request.EnableBuffering();
+                        Stream body = httpContext.Request.Body;
+                        byte[] buffer = new byte[Convert.ToInt32(httpContext.Request.ContentLength, CultureInfo.InvariantCulture)];
+                        await httpContext.Request.Body.ReadAsync(buffer.AsMemory(0, buffer.Length), cancellationToken);
                         string initialRequestBody = Encoding.UTF8.GetString(buffer);
                         body.Seek(0, SeekOrigin.Begin);
-                        httpCtx.Request.Body = body;
+                        httpContext.Request.Body = body;
 
                         if (_options.MaxBodyLength > 0 && initialRequestBody.Length > _options.MaxBodyLength)
                         {
@@ -109,24 +113,24 @@ public class HttpContextLoggingMiddleware
             {
                 using MemoryStream responseBodyMemoryStream = new MemoryStream();
 
-                Stream originalResponseBodyReference = httpCtx.Response.Body;
-                httpCtx.Response.Body = responseBodyMemoryStream;
+                Stream originalResponseBodyReference = httpContext.Response.Body;
+                httpContext.Response.Body = responseBodyMemoryStream;
 
-                await _next(httpCtx);
+                await _next(httpContext);
 
-                httpCtx.Response.Body.Seek(0, SeekOrigin.Begin);
+                httpContext.Response.Body.Seek(0, SeekOrigin.Begin);
 
                 string responseBody;
 
-                using StreamReader sr = new StreamReader(httpCtx.Response.Body);
+                using StreamReader sr = new StreamReader(httpContext.Response.Body);
                 responseBody = await sr.ReadToEndAsync();
-                httpCtx.Response.Body.Seek(0, SeekOrigin.Begin);
+                httpContext.Response.Body.Seek(0, SeekOrigin.Begin);
 
                 string endResponseBody = (_options.MaxBodyLength > 0 && responseBody.Length > _options.MaxBodyLength)
                     ? responseBody.Substring(0, _options.MaxBodyLength)
                     : responseBody;
 
-                Dictionary<string, object> responseHeaders = GetValidResponseHeaders(httpCtx.Response.Headers);
+                Dictionary<string, object> responseHeaders = GetValidResponseHeaders(httpContext.Response.Headers);
 
                 foreach (string key in _options.SkipResponseHeaders)
                 {
@@ -134,16 +138,16 @@ public class HttpContextLoggingMiddleware
                 }
 
                 using (logger.BeginScope(responseHeaders))
-                using (logger.BeginScopeWith((LoggingLogKeys.StatusCode, httpCtx.Response.StatusCode),
+                using (logger.BeginScopeWith((LoggingLogKeys.StatusCode, httpContext.Response.StatusCode),
                     (LoggingLogKeys.ResponseBody, endResponseBody),
-                    (LoggingLogKeys.RequestProtocol, httpCtx.Request.Protocol),
-                    (LoggingLogKeys.RequestScheme, httpCtx.Request.Scheme),
-                    (LoggingLogKeys.RequestHost, httpCtx.Request.Host.Value),
-                    (LoggingLogKeys.RequestMethod, httpCtx.Request.Method),
-                    (LoggingLogKeys.RequestPath, httpCtx.Request.Path),
-                    (LoggingLogKeys.RequestQuery, httpCtx.Request.QueryString),
-                    (LoggingLogKeys.RequestPathAndQuery, GetFullPath(httpCtx)),
-                    (LoggingLogKeys.RequestAborted, httpCtx.RequestAborted.IsCancellationRequested)))
+                    (LoggingLogKeys.RequestProtocol, httpContext.Request.Protocol),
+                    (LoggingLogKeys.RequestScheme, httpContext.Request.Scheme),
+                    (LoggingLogKeys.RequestHost, httpContext.Request.Host.Value),
+                    (LoggingLogKeys.RequestMethod, httpContext.Request.Method),
+                    (LoggingLogKeys.RequestPath, httpContext.Request.Path),
+                    (LoggingLogKeys.RequestQuery, httpContext.Request.QueryString),
+                    (LoggingLogKeys.RequestPathAndQuery, GetFullPath(httpContext)),
+                    (LoggingLogKeys.RequestAborted, httpContext.RequestAborted.IsCancellationRequested)))
                 {
                     logger.LogInformation("HTTP request handled.");
                 }
@@ -152,9 +156,9 @@ public class HttpContextLoggingMiddleware
             }
             else
             {
-                await _next(httpCtx);
+                await _next(httpContext);
 
-                Dictionary<string, object> responseHeaders = GetValidResponseHeaders(httpCtx.Response.Headers);
+                Dictionary<string, object> responseHeaders = GetValidResponseHeaders(httpContext.Response.Headers);
 
                 foreach (string key in _options.SkipResponseHeaders)
                 {
@@ -162,15 +166,15 @@ public class HttpContextLoggingMiddleware
                 }
 
                 using (logger.BeginScope(responseHeaders))
-                using (logger.BeginScopeWith((LoggingLogKeys.StatusCode, httpCtx.Response.StatusCode),
-                    (LoggingLogKeys.RequestProtocol, httpCtx.Request.Protocol),
-                    (LoggingLogKeys.RequestScheme, httpCtx.Request.Scheme),
-                    (LoggingLogKeys.RequestHost, httpCtx.Request.Host.Value),
-                    (LoggingLogKeys.RequestMethod, httpCtx.Request.Method),
-                    (LoggingLogKeys.RequestPath, httpCtx.Request.Path),
-                    (LoggingLogKeys.RequestQuery, httpCtx.Request.QueryString),
-                    (LoggingLogKeys.RequestPathAndQuery, GetFullPath(httpCtx)),
-                    (LoggingLogKeys.RequestAborted, httpCtx.RequestAborted.IsCancellationRequested)))
+                using (logger.BeginScopeWith((LoggingLogKeys.StatusCode, httpContext.Response.StatusCode),
+                    (LoggingLogKeys.RequestProtocol, httpContext.Request.Protocol),
+                    (LoggingLogKeys.RequestScheme, httpContext.Request.Scheme),
+                    (LoggingLogKeys.RequestHost, httpContext.Request.Host.Value),
+                    (LoggingLogKeys.RequestMethod, httpContext.Request.Method),
+                    (LoggingLogKeys.RequestPath, httpContext.Request.Path),
+                    (LoggingLogKeys.RequestQuery, httpContext.Request.QueryString),
+                    (LoggingLogKeys.RequestPathAndQuery, GetFullPath(httpContext)),
+                    (LoggingLogKeys.RequestAborted, httpContext.RequestAborted.IsCancellationRequested)))
                 {
                     logger.LogInformation("HTTP request handled.");
                 }
@@ -178,7 +182,7 @@ public class HttpContextLoggingMiddleware
         }
         else
         {
-            await _next(httpCtx);
+            await _next(httpContext);
         }
     }
 

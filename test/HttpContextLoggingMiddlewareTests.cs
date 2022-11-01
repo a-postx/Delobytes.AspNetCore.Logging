@@ -242,7 +242,7 @@ public class HttpContextLoggingMiddlewareTests
 
         HttpContextLoggingMiddleware middleware = new HttpContextLoggingMiddleware(requestDelegate, options);
 
-        await middleware.InvokeAsync(ctx, logger);
+        await middleware.InvokeAsync(ctx, loggerFactory);
     }
 
     private HttpContext GetContextWithRequestAndResponse(Dictionary<string, StringValues> requestHeaders,
