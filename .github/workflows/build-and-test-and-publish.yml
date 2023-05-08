@@ -82,7 +82,7 @@ jobs:
         name: 'ubuntu-latest'
     - name: 'Dotnet NuGet Push'
       run: |
-        dotnet nuget push *.nupkg --skip-duplicate --source https://nuget.pkg.github.com/Delobytes.AspNetCore.Logging/index.json --api-key ${{ secrets.GITHUB_TOKEN }}
+        dotnet nuget push *.nupkg --source https://nuget.pkg.github.com/Delobytes.AspNetCore.Logging/index.json --skip-duplicate --api-key ${{ github.token }}
 
   push-nuget-package:
     name: 'Push NuGet Package'
