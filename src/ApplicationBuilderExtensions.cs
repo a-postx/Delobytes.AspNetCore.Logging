@@ -49,10 +49,23 @@ public static class ApplicationBuilderExtensions
     /// </summary>
     /// <param name="app"></param>
     /// <returns></returns>
+    [Obsolete("Прослойка устарела, пожалуйста используйте UseHeaderContextLogging.")]
     public static IApplicationBuilder UseIdempotencyContextLogging(this IApplicationBuilder app)
     {
         ArgumentNullException.ThrowIfNull(app);
 
         return app.UseMiddleware<IdempotencyLoggingMiddleware>();
+    }
+
+    /// <summary>
+    /// Добавляет прослойку логирования контекста заголовка запроса.
+    /// </summary>
+    /// <param name="app"></param>
+    /// <returns></returns>
+    public static IApplicationBuilder UseHeaderContextLogging(this IApplicationBuilder app)
+    {
+        ArgumentNullException.ThrowIfNull(app);
+
+        return app.UseMiddleware<HeaderLoggingMiddleware>();
     }
 }

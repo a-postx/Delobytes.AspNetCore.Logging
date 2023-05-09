@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-	<Version>4.0.0.0-beta4</Version>
+	<Version>4.0.0.0-beta5</Version>
     <LangVersion>latest</LangVersion>
     <Authors>Алексей Якубин</Authors>
     <Company>Делобайты</Company>
@@ -32,7 +32,6 @@
 
   <ItemGroup>
     <PackageReference Include="Delobytes.AspNetCore" Version="7.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1" />

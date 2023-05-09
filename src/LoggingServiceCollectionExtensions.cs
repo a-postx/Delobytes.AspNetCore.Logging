@@ -53,7 +53,28 @@ public static class LoggingServiceCollectionExtensions
     /// <param name="services"><see cref="IServiceCollection"/> в которую нужно добавить логирование.</param>
     /// <param name="configure"><see cref="Action{IdempotencyContextLoggingOptions}"/> для настройки <see cref="IdempotencyLoggingOptions"/>.</param>
     /// <returns>Ссылка на этот экземпляр после завершения операции.</returns>
+    [Obsolete("Прослойка устарела, пожалуйста используйте AddHeaderContextLogging.")]
     public static IServiceCollection AddIdempotencyContextLogging(this IServiceCollection services, Action<IdempotencyLoggingOptions>? configure = null)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        if (configure is not null)
+        {
+            services.Configure(configure);
+        }
+
+        services.AddOptions();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Добавляет в <see cref="IServiceCollection"/> настройки логирования контекста заголовка запроса.
+    /// </summary>
+    /// <param name="services"><see cref="IServiceCollection"/> в которую нужно добавить логирование.</param>
+    /// <param name="configure"><see cref="Action{HeaderLoggingOptions}"/> для настройки <see cref="HeaderLoggingOptions"/>.</param>
+    /// <returns>Ссылка на этот экземпляр после завершения операции.</returns>
+    public static IServiceCollection AddHeaderContextLogging(this IServiceCollection services, Action<HeaderLoggingOptions>? configure = null)
     {
         ArgumentNullException.ThrowIfNull(services);
 

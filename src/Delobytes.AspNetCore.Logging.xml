@@ -38,6 +38,13 @@
             <param name="app"></param>
             <returns></returns>
         </member>
+        <member name="M:Delobytes.AspNetCore.Logging.ApplicationBuilderExtensions.UseHeaderContextLogging(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Добавляет прослойку логирования контекста заголовка запроса.
+            </summary>
+            <param name="app"></param>
+            <returns></returns>
+        </member>
         <member name="T:Delobytes.AspNetCore.Logging.ClaimsLoggingMiddleware">
             <summary>
             Прослойка логирования удостоверений пользователя.
@@ -85,6 +92,45 @@
             Дополнительные имена удостоверений, значения которых нужно логировать.
             </para>
             <para>Default: Array.Empty</para>
+            </summary>
+        </member>
+        <member name="T:Delobytes.AspNetCore.Logging.HeaderLoggingMiddleware">
+            <summary>
+            Прослойка логирования заголовка.
+            </summary>
+        </member>
+        <member name="M:Delobytes.AspNetCore.Logging.HeaderLoggingMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate,Microsoft.Extensions.Options.IOptions{Delobytes.AspNetCore.Logging.HeaderLoggingOptions})">
+            <summary>
+            Конструктор.
+            </summary>
+            <param name="next">Следующая прослойка в конвейере.</param>
+            <param name="options">Настроки конфигурации.</param>
+        </member>
+        <member name="M:Delobytes.AspNetCore.Logging.HeaderLoggingMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext,Microsoft.Extensions.Logging.ILogger{Delobytes.AspNetCore.Logging.HeaderLoggingMiddleware})">
+            <summary>
+            Обработчик, который добавляет значение заголовка в контекст логирования.
+            </summary>
+            <param name="httpContext"><see cref="T:Microsoft.AspNetCore.Http.HttpContext"/> текущего запроса.</param>
+            <param name="logger">Экземпляр <see cref="T:Microsoft.Extensions.Logging.ILogger"/>.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Delobytes.AspNetCore.Logging.HeaderLoggingOptions">
+            <summary>
+            Настройки логирования заголовка.
+            </summary>
+        </member>
+        <member name="P:Delobytes.AspNetCore.Logging.HeaderLoggingOptions.HeaderName">
+            <summary>
+            <para>
+            Заголовок, значение которого нужно добавлять в контекст логирования.
+            </para>
+            </summary>
+        </member>
+        <member name="P:Delobytes.AspNetCore.Logging.HeaderLoggingOptions.HeaderLogsName">
+            <summary>
+            <para>
+            Имя заголовка, которое будет отображаться в логах.
+            </para>
             </summary>
         </member>
         <member name="T:Delobytes.AspNetCore.Logging.HttpContextLoggingMiddleware">
@@ -331,6 +377,14 @@
             </summary>
             <param name="services"><see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> в которую нужно добавить логирование.</param>
             <param name="configure"><see cref="T:System.Action`1"/> для настройки <see cref="T:Delobytes.AspNetCore.Logging.IdempotencyLoggingOptions"/>.</param>
+            <returns>Ссылка на этот экземпляр после завершения операции.</returns>
+        </member>
+        <member name="M:Delobytes.AspNetCore.Logging.LoggingServiceCollectionExtensions.AddHeaderContextLogging(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Delobytes.AspNetCore.Logging.HeaderLoggingOptions})">
+            <summary>
+            Добавляет в <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> настройки логирования контекста заголовка запроса.
+            </summary>
+            <param name="services"><see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> в которую нужно добавить логирование.</param>
+            <param name="configure"><see cref="T:System.Action`1"/> для настройки <see cref="T:Delobytes.AspNetCore.Logging.HeaderLoggingOptions"/>.</param>
             <returns>Ссылка на этот экземпляр после завершения операции.</returns>
         </member>
         <member name="T:Delobytes.AspNetCore.Logging.NetworkLoggingMiddleware">

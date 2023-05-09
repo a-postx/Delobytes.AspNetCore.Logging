@@ -3,39 +3,45 @@ using Microsoft.Extensions.Primitives;
 namespace Delobytes.AspNetCore.Logging;
 
 /// <summary>
-/// Прослойка логирования контекста идемпотентности.
+/// Прослойка логирования заголовка.
 /// </summary>
-[Obsolete("Прослойка устарела, пожалуйста используйте HeaderLoggingModdleware.")]
-public class IdempotencyLoggingMiddleware
+public class HeaderLoggingMiddleware
 {
     /// <summary>
     /// Конструктор.
     /// </summary>
     /// <param name="next">Следующая прослойка в конвейере.</param>
     /// <param name="options">Настроки конфигурации.</param>
-    public IdempotencyLoggingMiddleware(RequestDelegate next, IOptions<IdempotencyLoggingOptions> options)
+    public HeaderLoggingMiddleware(RequestDelegate next, IOptions<HeaderLoggingOptions> options)
     {
         _options = options.Value ?? throw new ArgumentNullException(nameof(options));
         _next = next ?? throw new ArgumentNullException(nameof(next));
     }
 
-    private readonly IdempotencyLoggingOptions _options;
+    private readonly HeaderLoggingOptions _options;
     private readonly RequestDelegate _next;
 
     /// <summary>
-    /// Обработчик, который добавляет ключ идемпотентности в контекст логирования.
+    /// Обработчик, который добавляет значение заголовка в контекст логирования.
     /// </summary>
     /// <param name="httpContext"><see cref="HttpContext"/> текущего запроса.</param>
     /// <param name="logger">Экземпляр <see cref="ILogger"/>.</param>
     /// <returns></returns>
-    public async Task InvokeAsync(HttpContext httpContext, ILogger<IdempotencyLoggingMiddleware> logger)
+    public async Task InvokeAsync(HttpContext httpContext, ILogger<HeaderLoggingMiddleware> logger)
     {
         ArgumentNullException.ThrowIfNull(httpContext, nameof(httpContext));
         ArgumentNullException.ThrowIfNull(logger, nameof(logger));
 
-        if (httpContext.Request.Headers.TryGetValue(_options.IdempotencyHeader, out StringValues idempotencyKeyValue))
+        if (_options.HeaderName != string.Empty && _options.HeaderLogsName!= string.Empty)
         {
-            using (logger.BeginScopeWith((_options.IdempotencyLogAttribute, idempotencyKeyValue.ToString())))
+            if (httpContext.Request.Headers.TryGetValue(_options.HeaderName, out StringValues idempotencyKeyValue))
+            {
+                using (logger.BeginScopeWith((_options.HeaderLogsName, idempotencyKeyValue.ToString())))
+                {
+                    await _next(httpContext);
+                }
+            }
+            else
             {
                 await _next(httpContext);
             }
