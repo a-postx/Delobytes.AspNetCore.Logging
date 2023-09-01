@@ -13,13 +13,7 @@ public static class LoggerExtensions
     public static IDisposable? BeginScopeWith(this ILogger logger, params (string key, object? value)[] paramsAndValues)
     {
         Dictionary<string, object?> state = paramsAndValues.ToDictionary(x => x.key, x => x.value);
-
-        IDisposable? startedScope = logger.BeginScope(state);
-
-        if (startedScope == null)
-        {
-            throw new InvalidOperationException("Scope is not available");
-        }
+        IDisposable? startedScope = logger.BeginScope(state) ?? throw new InvalidOperationException("Scope is not available");
 
         return startedScope;
     }

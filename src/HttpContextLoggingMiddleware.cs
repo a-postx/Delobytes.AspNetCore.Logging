@@ -70,39 +70,37 @@ public class HttpContextLoggingMiddleware
             }
 
             using (logger.BeginScope(requestHeaders))
+            using (logger.BeginScopeWith((LoggingLogKeys.RequestProtocol, httpContext.Request.Protocol),
+                (LoggingLogKeys.RequestScheme, httpContext.Request.Scheme),
+                (LoggingLogKeys.RequestHost, httpContext.Request.Host.Value),
+                (LoggingLogKeys.RequestMethod, httpContext.Request.Method),
+                (LoggingLogKeys.RequestPath, httpContext.Request.Path),
+                (LoggingLogKeys.RequestQuery, httpContext.Request.QueryString),
+                (LoggingLogKeys.RequestPathAndQuery, GetFullPath(httpContext))))
             {
-                using (logger.BeginScopeWith((LoggingLogKeys.RequestProtocol, httpContext.Request.Protocol),
-                    (LoggingLogKeys.RequestScheme, httpContext.Request.Scheme),
-                    (LoggingLogKeys.RequestHost, httpContext.Request.Host.Value),
-                    (LoggingLogKeys.RequestMethod, httpContext.Request.Method),
-                    (LoggingLogKeys.RequestPath, httpContext.Request.Path),
-                    (LoggingLogKeys.RequestQuery, httpContext.Request.QueryString),
-                    (LoggingLogKeys.RequestPathAndQuery, GetFullPath(httpContext))))
+                if (_options.LogRequestBody)
                 {
-                    if (_options.LogRequestBody)
+                    httpContext.Request.EnableBuffering();
+                    Stream body = httpContext.Request.Body;
+                    byte[] buffer = new byte[Convert.ToInt32(httpContext.Request.ContentLength, CultureInfo.InvariantCulture)];
+                    await httpContext.Request.Body.ReadAsync(buffer.AsMemory(0, buffer.Length), cancellationToken);
+                    string initialRequestBody = Encoding.UTF8.GetString(buffer);
+                    body.Seek(0, SeekOrigin.Begin);
+                    httpContext.Request.Body = body;
+
+                    if (_options.MaxBodyLength > 0 && initialRequestBody.Length > _options.MaxBodyLength)
                     {
-                        httpContext.Request.EnableBuffering();
-                        Stream body = httpContext.Request.Body;
-                        byte[] buffer = new byte[Convert.ToInt32(httpContext.Request.ContentLength, CultureInfo.InvariantCulture)];
-                        await httpContext.Request.Body.ReadAsync(buffer.AsMemory(0, buffer.Length), cancellationToken);
-                        string initialRequestBody = Encoding.UTF8.GetString(buffer);
-                        body.Seek(0, SeekOrigin.Begin);
-                        httpContext.Request.Body = body;
-
-                        if (_options.MaxBodyLength > 0 && initialRequestBody.Length > _options.MaxBodyLength)
-                        {
-                            initialRequestBody = initialRequestBody.Substring(0, _options.MaxBodyLength);
-                        }
-
-                        using (logger.BeginScopeWith((LoggingLogKeys.RequestBody, initialRequestBody)))
-                        {
-                            logger.LogInformation("HTTP request received.");
-                        }
+                        initialRequestBody = initialRequestBody.Substring(0, _options.MaxBodyLength);
                     }
-                    else
+
+                    using (logger.BeginScopeWith((LoggingLogKeys.RequestBody, initialRequestBody)))
                     {
                         logger.LogInformation("HTTP request received.");
                     }
+                }
+                else
+                {
+                    logger.LogInformation("HTTP request received.");
                 }
             }
 

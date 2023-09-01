@@ -5,7 +5,7 @@ namespace Delobytes.AspNetCore.Logging;
 /// <summary>
 /// Прослойка логирования контекста идемпотентности.
 /// </summary>
-[Obsolete("Прослойка устарела, пожалуйста используйте HeaderLoggingModdleware.")]
+[Obsolete("Прослойка устарела, пожалуйста используйте HeaderLoggingMiddleware.")]
 public class IdempotencyLoggingMiddleware
 {
     /// <summary>

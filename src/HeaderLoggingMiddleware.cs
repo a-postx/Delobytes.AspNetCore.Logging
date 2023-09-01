@@ -32,16 +32,11 @@ public class HeaderLoggingMiddleware
         ArgumentNullException.ThrowIfNull(httpContext, nameof(httpContext));
         ArgumentNullException.ThrowIfNull(logger, nameof(logger));
 
-        if (_options.HeaderName != string.Empty && _options.HeaderLogsName!= string.Empty)
+        if (_options.HeaderName != string.Empty &&
+            _options.HeaderLogsName != string.Empty &&
+            httpContext.Request.Headers.TryGetValue(_options.HeaderName, out StringValues idempotencyKeyValue))
         {
-            if (httpContext.Request.Headers.TryGetValue(_options.HeaderName, out StringValues idempotencyKeyValue))
-            {
-                using (logger.BeginScopeWith((_options.HeaderLogsName, idempotencyKeyValue.ToString())))
-                {
-                    await _next(httpContext);
-                }
-            }
-            else
+            using (logger.BeginScopeWith((_options.HeaderLogsName, idempotencyKeyValue.ToString())))
             {
                 await _next(httpContext);
             }
